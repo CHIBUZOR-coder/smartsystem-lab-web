@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design Tokens — Light Mode ─────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --color-bg:           #FFFFFF;
+  --color-bg-alt:       #F5F5F5;
+  --color-surface:      #FFFFFF;
+
+  /* Brand dark teal */
+  --color-teal:         #062020;
+  --color-teal-mid:     #093030;
+  --color-teal-light:   #144848;
+
+  /* Brand green */
+  --color-green:        #00C896;
+  --color-green-dark:   #00A87E;
+  --color-green-subtle: #E8F8F2;
+
+  /* Text — deep teal for sharp contrast on light */
+  --color-text-h:       #062020;
+  --color-text-body:    #214040;
+  --color-text-muted:   #4E7272;
+
+  /* Semantic */
+  --color-danger:       #DC2626;
+  --color-success:      #00C896;
+  --color-border:       #E2E2E2;
+
+  color-scheme: light;
+}
+
+/* ─── Design Tokens — Dark Mode ──────────────────────────────────────────── */
+.dark {
+  /* Surfaces — deep lacquered teal, like polished dark material */
+  --color-bg:           #020D0D;
+  --color-bg-alt:       #061818;
+  --color-surface:      #091F1F;
+
+  /* Teal accent on dark */
+  --color-teal:         #F5F5F5;
+  --color-teal-mid:     #B8DDD5;
+  --color-teal-light:   #88BFB5;
+
+  /* Brand green — precise, not neon */
+  --color-green:        #00C896;
+  --color-green-dark:   #00DFAA;
+  --color-green-subtle: #0B3028;
+
+  /* Text — pure white heading */
+  --color-text-h:       #FFFFFF;
+  --color-text-body:    #AACDC8;
+  --color-text-muted:   #587878;
+
+  /* Semantic */
+  --color-danger:       #F87171;
+  --color-success:      #00C896;
+  --color-border:       #142E2E;
+
+  color-scheme: dark;
+}
+
+/* ─── Force light mode (admin panel) ─────────────────────────────────────── */
+.force-light {
+  --color-bg:           #FFFFFF;
+  --color-bg-alt:       #F5F5F5;
+  --color-surface:      #FFFFFF;
+  --color-teal:         #062020;
+  --color-teal-mid:     #093030;
+  --color-teal-light:   #144848;
+  --color-green:        #00C896;
+  --color-green-dark:   #00A87E;
+  --color-green-subtle: #E8F8F2;
+  --color-text-h:       #062020;
+  --color-text-body:    #214040;
+  --color-text-muted:   #4E7272;
+  --color-danger:       #DC2626;
+  --color-success:      #00C896;
+  --color-border:       #E2E2E2;
+  color-scheme: light;
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text-body);
+  font-family: Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Skeleton shimmer utility ───────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@layer utilities {
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-border) 25%,
+      var(--color-bg-alt) 50%,
+      var(--color-border) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 0.25rem;
+  }
+}
