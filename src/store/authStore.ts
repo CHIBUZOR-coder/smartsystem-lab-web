@@ -8,28 +8,24 @@ interface AdminUser {
 }
 
 interface AuthStore {
-  token: string | null
-  admin: AdminUser | null
-  setAuth:   (token: string, admin: AdminUser) => void
+  admin:     AdminUser | null
+  hydrated:  boolean
+  setAuth:   (admin: AdminUser) => void
   clearAuth: () => void
   isAuthenticated: () => boolean
 }
 
-const TOKEN_KEY = 'az_admin_token'
-
 export const useAuthStore = create<AuthStore>((set, get) => ({
-  token: localStorage.getItem(TOKEN_KEY),
-  admin: null,
+  admin:    null,
+  hydrated: false,
 
-  setAuth(token, admin) {
-    localStorage.setItem(TOKEN_KEY, token)
-    set({ token, admin })
+  setAuth(admin) {
+    set({ admin, hydrated: true })
   },
 
   clearAuth() {
-    localStorage.removeItem(TOKEN_KEY)
-    set({ token: null, admin: null })
+    set({ admin: null, hydrated: true })
   },
 
-  isAuthenticated: () => !!get().token,
+  isAuthenticated: () => get().admin !== null,
 }))

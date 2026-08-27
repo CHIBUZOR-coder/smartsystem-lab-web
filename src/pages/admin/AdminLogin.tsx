@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useAuthStore } from '../../store/authStore'
 import api from '../../lib/api'
@@ -23,9 +23,9 @@ const AdminLogin = () => {
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
   const [showPass, setShowPass] = useState(false)
-  const { setAuth }           = useAuthStore()
-  const navigate              = useNavigate()
-  const location              = useLocation()
+  const { setAuth }             = useAuthStore()
+  const navigate                = useNavigate()
+  const location                = useLocation()
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/admin'
 
   const onSubmit = async (data: LoginForm) => {
@@ -33,7 +33,7 @@ const AdminLogin = () => {
     setError('')
     try {
       const res = await api.post('/api/auth/login', data)
-      setAuth(res.data.token, res.data.admin)
+      setAuth(res.data.admin)
       navigate(from, { replace: true })
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
@@ -100,6 +100,15 @@ const AdminLogin = () => {
             <Button type="submit" variant="primary" loading={loading} className="w-full">
               Sign in
             </Button>
+
+            <div className="text-center pt-1">
+              <Link
+                to="/admin/forgot-password"
+                className="text-xs text-gray-400 hover:text-brand-teal transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </form>
         </div>
       </div>

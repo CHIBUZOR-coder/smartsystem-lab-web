@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAuthStore } from '../../store/authStore'
+import api from '../../lib/api'
 
 const navItems = [
   { label: 'Dashboard',  to: '/admin',          icon: '▦' },
@@ -49,7 +50,7 @@ const SidebarContent = ({ onNav, onLogout, admin }: {
             }`
           }
         >
-          <span className="text-base leading-none">{item.icon}</span>
+          <span className="text-base leading-none" aria-hidden="true">{item.icon}</span>
           {item.label}
         </NavLink>
       ))}
@@ -90,7 +91,8 @@ const AdminLayout = () => {
   const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try { await api.post('/api/auth/logout') } catch { /* ignore */ }
     clearAuth()
     navigate('/admin/login')
   }

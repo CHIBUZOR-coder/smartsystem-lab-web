@@ -4,15 +4,14 @@ import { useLoaderStore } from '../store/loaderStore'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:4000',
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true, // send httpOnly auth cookie on every request
 })
 
 const isMutation = (method?: string) =>
   ['post', 'put', 'patch', 'delete'].includes((method ?? '').toLowerCase())
 
-// Attach JWT + show global loader for mutations
+// Show global loader for mutations
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('az_admin_token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
   if (isMutation(config.method)) useLoaderStore.getState().show()
   return config
 })
@@ -26,7 +25,6 @@ api.interceptors.response.use(
   err => {
     if (isMutation(err.config?.method)) useLoaderStore.getState().hide()
     if (err.response?.status === 401) {
-      localStorage.removeItem('az_admin_token')
       if (window.location.pathname.startsWith('/admin') &&
           window.location.pathname !== '/admin/login') {
         window.location.href = '/admin/login'
