@@ -8,6 +8,34 @@ import SkeletonBox from '../../components/ui/SkeletonBox'
 
 interface FaqItem { id: string; question: string; answer: string; order: number }
 
+// Card list: #n | Question | Answer preview | Edit/Delete
+const FaqListSkeleton = () => (
+  <div aria-hidden="true">
+    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <SkeletonBox className="h-7 w-16" />
+      <SkeletonBox className="h-8 w-32 rounded-lg" />
+    </div>
+    <div className="space-y-3">
+      {Array.from({ length: 6 }, (_, i) => (
+        <div key={i} className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 space-y-2">
+              <SkeletonBox className="h-3 w-8" />
+              <SkeletonBox className={`h-4 ${['w-3/4', 'w-2/3', 'w-4/5', 'w-3/5', 'w-4/5', 'w-2/3'][i]}`} />
+              <SkeletonBox className="h-3 w-full" />
+              <SkeletonBox className="h-3 w-5/6" />
+            </div>
+            <div className="flex gap-2 shrink-0 mt-1">
+              <SkeletonBox className="h-3 w-8" />
+              <SkeletonBox className="h-3 w-12" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)
+
 const AdminFaq = () => {
   const qc = useQueryClient()
   const [editing, setEditing]   = useState<FaqItem | null>(null)
@@ -21,6 +49,8 @@ const AdminFaq = () => {
 
   const { register, handleSubmit, reset } = useForm<FaqItem>()
   const items = data?.data ?? []
+
+  if (isLoading) return <FaqListSkeleton />
 
   const openAdd  = () => { setEditing(null); reset({ order: items.length + 1 }); setModal(true) }
   const openEdit = (f: FaqItem) => { setEditing(f); reset(f); setModal(true) }
@@ -45,15 +75,7 @@ const AdminFaq = () => {
       </div>
 
       <div className="space-y-3">
-        {isLoading ? (
-          Array.from({ length: 5 }, (_, i) => (
-            <div key={i} className="bg-white rounded-xl border border-gray-200 p-5" aria-hidden="true">
-              <SkeletonBox className={`h-4 mb-2 ${i % 2 === 0 ? 'w-2/3' : 'w-1/2'}`} />
-              <SkeletonBox className="h-3 w-full mt-2 opacity-60" />
-              <SkeletonBox className="h-3 w-4/5 mt-1 opacity-40" />
-            </div>
-          ))
-        ) : items.length === 0 ? <p className="text-gray-400 text-sm">No FAQ items yet.</p>
+        {items.length === 0 ? <p className="text-gray-400 text-sm">No FAQ items yet.</p>
           : items.map((item, i) => (
             <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-5">
               <div className="flex items-start justify-between gap-4">

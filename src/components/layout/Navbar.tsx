@@ -20,16 +20,24 @@ const moreLinks = [
 const baseLinkClass =
   'relative px-3 py-1.5 rounded-full text-sm font-medium transition-colors duration-150'
 
-/* ── Logo ──────────────────────────────────────────────────────────────── */
+/* ── Logo mark — green background always, AZ mark flips with theme ─────── */
 const Logo = ({ isDark }: { isDark: boolean }) => (
-  <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="AZ SmartSystem Lab home">
-    <div className="h-8 w-8 rounded bg-brand-green flex items-center justify-center shrink-0">
-      <span className="text-[#061414] font-black text-sm leading-none">AZ</span>
-    </div>
-    <span className={`font-bold text-base tracking-tight ${isDark ? 'text-white' : 'text-[#062020]'}`}>
-      AZ SMARTSYSTEM{' '}
-      <span className="text-brand-green">LAB</span>
-    </span>
+  <Link to="/" aria-label="AZ SmartSystem Lab home" className="shrink-0 block">
+    <svg
+      viewBox="0 0 100 100"
+      width="40"
+      height="40"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Background: always brand green */}
+      <rect width="100" height="100" rx="12" fill="#00C896" />
+      {/* AZ mark: dark teal in light mode, white in dark mode */}
+      <path
+        fill={isDark ? '#FFFFFF' : '#061F1F'}
+        d="M 12,82 L 40,18 L 49,18 L 64,55 L 74,55 L 74,18 L 88,18 L 88,65 C 88,80 77,82 74,75 L 74,65 L 64,65 L 20,82 Z"
+      />
+    </svg>
   </Link>
 )
 

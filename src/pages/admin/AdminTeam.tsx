@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
+import SkeletonBox from '../../components/ui/SkeletonBox'
 import { AdminTableSkeleton } from '../../components/ui/SkeletonBox'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -52,6 +53,52 @@ const CopyButton = ({ text }: { text: string }) => {
     </button>
   )
 }
+
+// ─── Loading skeleton: Order | Name | Title | Visible | Actions ───────────────
+
+const TeamTableSkeleton = () => (
+  <div className="space-y-8" aria-hidden="true">
+    {/* Members table */}
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <SkeletonBox className="h-7 w-32" />
+        <div className="flex gap-2">
+          <SkeletonBox className="h-8 w-36 rounded-lg" />
+          <SkeletonBox className="h-8 w-28 rounded-lg" />
+        </div>
+      </div>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-gray-50 px-5 py-3 grid grid-cols-5 gap-4 border-b border-gray-100">
+          {['w-10', 'w-1/3', 'w-1/4', 'w-16', 'w-1/4'].map((w, i) => (
+            <SkeletonBox key={i} className={`h-3 ${w}`} />
+          ))}
+        </div>
+        <div className="divide-y divide-gray-100">
+          {Array.from({ length: 5 }, (_, r) => (
+            <div key={r} className="px-5 py-4 grid grid-cols-5 gap-4 items-center">
+              <SkeletonBox className="h-3 w-6 mx-auto" />
+              <SkeletonBox className="h-4 w-3/4" />
+              <SkeletonBox className="h-3 w-2/3" />
+              <SkeletonBox className="h-5 w-16 rounded-full" />
+              <div className="flex gap-2">
+                <SkeletonBox className="h-3 w-8" />
+                <SkeletonBox className="h-3 w-20" />
+                <SkeletonBox className="h-3 w-10" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    {/* Active invites section */}
+    <div>
+      <SkeletonBox className="h-6 w-48 mb-4" />
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <SkeletonBox className="h-4 w-80" />
+      </div>
+    </div>
+  </div>
+)
 
 // ─── AdminTeam ────────────────────────────────────────────────────────────────
 
@@ -116,6 +163,8 @@ const AdminTeam = () => {
   const invites = inviteData?.data ?? []
   const activeInvites = invites.filter(i => i.status === 'active')
 
+  if (isLoading) return <TeamTableSkeleton />
+
   const openInviteModal = (memberId = 'new') => {
     setInviteFor(memberId)
     setNewLink('')
@@ -137,9 +186,6 @@ const AdminTeam = () => {
           </div>
         </div>
 
-        {isLoading ? (
-          <AdminTableSkeleton cols={['w-12', 'w-1/4', 'w-1/4', 'w-16', 'w-28']} />
-        ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
           {members.length === 0 ? <p className="p-5 text-gray-400 text-sm">No team members yet.</p>
             : (
@@ -175,7 +221,6 @@ const AdminTeam = () => {
               </table>
             )}
         </div>
-        )}
       </div>
 
       {/* ── Active Onboarding Invites ──────────────────────────────────── */}

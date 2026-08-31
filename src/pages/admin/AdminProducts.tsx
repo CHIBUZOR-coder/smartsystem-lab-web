@@ -7,7 +7,7 @@ import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
 import ImageUpload from '../../components/admin/ImageUpload'
 import VideoUpload from '../../components/admin/VideoUpload'
-import { AdminTableSkeleton } from '../../components/ui/SkeletonBox'
+import SkeletonBox from '../../components/ui/SkeletonBox'
 
 interface Product {
   id: string; slug: string; name: string; tagline: string; description: string
@@ -20,6 +20,39 @@ type FormData = Omit<Product, 'id'> & { featuresRaw: string; targetUsersRaw: str
 const statusMap: Record<Product['status'], 'available' | 'pilot' | 'coming-soon'> = {
   AVAILABLE: 'available', PILOT: 'pilot', COMING_SOON: 'coming-soon',
 }
+
+// Name/tagline | Category | Status | Actions
+const ProductsTableSkeleton = () => (
+  <div aria-hidden="true">
+    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <SkeletonBox className="h-7 w-24" />
+      <SkeletonBox className="h-8 w-28 rounded-lg" />
+    </div>
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-gray-50 px-5 py-3 grid grid-cols-4 gap-4 border-b border-gray-100">
+        {['w-2/5', 'w-1/4', 'w-1/5', 'w-1/5'].map((w, i) => (
+          <SkeletonBox key={i} className={`h-3 ${w}`} />
+        ))}
+      </div>
+      <div className="divide-y divide-gray-100">
+        {Array.from({ length: 7 }, (_, r) => (
+          <div key={r} className="px-5 py-4 grid grid-cols-4 gap-4 items-center">
+            <div className="space-y-1.5">
+              <SkeletonBox className="h-4 w-3/4" />
+              <SkeletonBox className="h-3 w-full" />
+            </div>
+            <SkeletonBox className="h-3 w-3/4" />
+            <SkeletonBox className="h-5 w-20 rounded-full" />
+            <div className="flex gap-3">
+              <SkeletonBox className="h-3 w-8" />
+              <SkeletonBox className="h-3 w-12" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)
 
 const AdminProducts = () => {
   const qc = useQueryClient()
@@ -58,6 +91,8 @@ const AdminProducts = () => {
 
   const products = data?.data ?? []
 
+  if (isLoading) return <ProductsTableSkeleton />
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -65,9 +100,6 @@ const AdminProducts = () => {
         <Button onClick={openAdd} size="sm">+ Add Product</Button>
       </div>
 
-      {isLoading ? (
-        <AdminTableSkeleton cols={['w-1/3', 'w-1/4', 'w-20', 'w-24']} />
-      ) : (
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
         {products.length === 0 ? (
           <p className="p-5 text-gray-400 text-sm">No products yet.</p>
@@ -101,7 +133,6 @@ const AdminProducts = () => {
           </table>
         )}
       </div>
-      )}
 
       {/* Add / Edit modal */}
       <Modal open={modalOpen} onClose={() => setModal(false)} title={editing ? 'Edit Product' : 'Add Product'} maxWidth="max-w-xl">

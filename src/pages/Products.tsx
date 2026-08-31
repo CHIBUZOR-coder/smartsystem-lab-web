@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
 import Badge from '../components/ui/Badge'
-import { SkeletonCard } from '../components/ui/SkeletonBox'
-import { PRODUCT_VISUALS, FALLBACK_VISUAL } from '../lib/productVisuals'
+import SkeletonBox from '../components/ui/SkeletonBox'
+import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources } from '../lib/productVisuals'
 import SeoHead from '../components/ui/SeoHead'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -50,6 +50,9 @@ const ArrowRightIcon = () => (
 
 const ProductCard = ({ product }: { product: Product }) => {
   const visual = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
+  const sources = getProductImageSources(product.imageUrl, visual)
+  const [srcIndex, setSrcIndex] = useState(0)
+  const imgSrc = sources[srcIndex] ?? null
 
   return (
     <motion.div
@@ -75,10 +78,11 @@ const ProductCard = ({ product }: { product: Product }) => {
 
         {/* Visual header */}
         <div className="relative z-10 h-48 overflow-hidden" style={{ background: visual.bg }}>
-          {product.imageUrl ? (
+          {imgSrc ? (
             <img
-              src={product.imageUrl}
+              src={imgSrc}
               alt={product.name}
+              onError={() => setSrcIndex(i => i + 1)}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           ) : (
@@ -120,6 +124,56 @@ const ProductCard = ({ product }: { product: Product }) => {
   )
 }
 
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
+
+const ProductsPageSkeleton = () => (
+  <div className="min-h-screen bg-[#061414]" aria-hidden="true">
+    {/* Hero */}
+    <section className="relative pt-28 pb-16 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A2828] to-[#061414]" />
+      <div className="relative max-w-6xl mx-auto px-6 text-center space-y-4">
+        <div className="h-3.5 w-24 rounded-full bg-[#00C896]/20 animate-pulse mx-auto" />
+        <div className="h-10 w-72 rounded-lg bg-[#0D2424] animate-pulse mx-auto" />
+        <div className="h-4 w-[440px] max-w-full rounded bg-[#0D2424] animate-pulse mx-auto" />
+        <div className="h-4 w-80 max-w-full rounded bg-[#0D2424] animate-pulse mx-auto" />
+      </div>
+    </section>
+
+    {/* Filter tabs */}
+    <div className="max-w-6xl mx-auto px-6 pb-6">
+      <div className="flex flex-wrap gap-2">
+        {[64, 88, 60, 112].map((w, i) => (
+          <div key={i} className="h-8 rounded-full bg-[#0D2424] animate-pulse" style={{ width: w }} />
+        ))}
+      </div>
+    </div>
+
+    {/* Product grid */}
+    <section className="max-w-6xl mx-auto px-6 pb-24">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="rounded-2xl border border-[#1A3D3D] bg-[#0D2424] overflow-hidden">
+            {/* Visual area */}
+            <div className="h-48 bg-[#132F2F] animate-pulse relative">
+              <div className="absolute top-3 left-3 h-6 w-24 rounded-full bg-[#0A2020] animate-pulse" />
+            </div>
+            {/* Body */}
+            <div className="p-5 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="h-4 w-36 rounded bg-[#132F2F] animate-pulse" />
+                <div className="h-5 w-20 rounded-full bg-[#132F2F] animate-pulse flex-shrink-0" />
+              </div>
+              <div className="h-3 w-full rounded bg-[#132F2F] animate-pulse" />
+              <div className="h-3 w-4/5 rounded bg-[#132F2F] animate-pulse" />
+              <div className="h-3 w-28 rounded bg-[#00C896]/10 animate-pulse" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+)
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const Products = () => {
@@ -134,6 +188,8 @@ const Products = () => {
   })
 
   const filtered = filter === 'ALL' ? products : products?.filter(p => p.status === filter)
+
+  if (isLoading) return <ProductsPageSkeleton />
 
   return (
     <div className="min-h-screen bg-[#061414]">
@@ -205,12 +261,6 @@ const Products = () => {
 
       {/* ── Grid ────────────────────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 pb-24">
-        {isLoading && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[0, 1, 2].map(i => <SkeletonCard key={i} />)}
-          </div>
-        )}
-
         {isError && (
           <p className="text-center text-red-400 py-16">
             Failed to load products. Please try again.

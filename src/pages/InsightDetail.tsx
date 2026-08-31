@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
-import SkeletonBox, { SkeletonText } from '../components/ui/SkeletonBox'
+import SkeletonBox from '../components/ui/SkeletonBox'
 import SeoHead from '../components/ui/SeoHead'
+import { getInsightImageSources } from '../lib/insightVisuals'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -121,18 +123,62 @@ const RelatedCard = ({ insight }: { insight: InsightSummary }) => {
   )
 }
 
-// ─── Skeleton loading state ───────────────────────────────────────────────────
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
 
-const DetailSkeleton = () => (
-  <div className="max-w-3xl mx-auto px-6 py-16 space-y-6">
-    <SkeletonBox className="h-5 w-24" rounded="full" />
-    <SkeletonBox className="h-10 w-4/5" />
-    <SkeletonBox className="h-10 w-3/5" />
-    <SkeletonBox className="h-4 w-32" />
-    <div className="h-px bg-brand-border my-8" />
-    <SkeletonText lines={4} />
-    <SkeletonText lines={3} />
-    <SkeletonText lines={5} />
+const InsightDetailPageSkeleton = () => (
+  <div className="overflow-x-hidden" aria-hidden="true">
+    {/* Hero (h-72 / h-96 dark cover) */}
+    <div className="relative h-72 sm:h-96 w-full bg-[#091F1F] animate-pulse flex items-end">
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(2,13,13,0.85) 100%)' }} />
+      <div className="relative z-10 max-w-3xl mx-auto w-full px-6 pb-8 space-y-3">
+        <div className="h-3 w-20 rounded bg-[#132F2F] animate-pulse" />
+        <div className="h-8 w-3/4 rounded-lg bg-[#132F2F] animate-pulse" />
+        <div className="h-8 w-1/2 rounded-lg bg-[#132F2F] animate-pulse" />
+      </div>
+    </div>
+
+    {/* Article body */}
+    <div className="max-w-3xl mx-auto px-6 py-12 space-y-6">
+      {/* Meta row: category chip + date + tags */}
+      <div className="flex flex-wrap items-center gap-3">
+        <SkeletonBox className="h-6 w-24" rounded="full" />
+        <SkeletonBox className="h-4 w-28" />
+        <div className="flex gap-1.5">
+          <SkeletonBox className="h-5 w-12" rounded="sm" />
+          <SkeletonBox className="h-5 w-14" rounded="sm" />
+          <SkeletonBox className="h-5 w-10" rounded="sm" />
+        </div>
+      </div>
+      <div className="h-px bg-brand-border" />
+
+      {/* Article paragraphs */}
+      <div className="space-y-2">
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-5/6" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-4/5" />
+      </div>
+      <div className="space-y-2 pt-2">
+        <SkeletonBox className="h-7 w-48" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-3/4" />
+      </div>
+      <div className="space-y-2">
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-5/6" />
+      </div>
+      <div className="space-y-2 pt-2">
+        <SkeletonBox className="h-7 w-56" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-4/5" />
+        <SkeletonBox className="h-4 w-full" />
+        <SkeletonBox className="h-4 w-3/5" />
+      </div>
+    </div>
   </div>
 )
 
@@ -141,6 +187,8 @@ const DetailSkeleton = () => (
 const InsightDetail = () => {
   const { id: slug } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  // must be before any early returns
+  const [heroIdx, setHeroIdx] = useState(0)
 
   const { data: insight, isLoading, isError } = useQuery<Insight>({
     queryKey: ['insight', slug],
@@ -160,6 +208,8 @@ const InsightDetail = () => {
     ?.filter(i => i.slug !== slug && i.category === insight?.category)
     .slice(0, 3) ?? []
 
+  if (isLoading) return <InsightDetailPageSkeleton />
+
   if (isError) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-6 text-center">
@@ -175,6 +225,10 @@ const InsightDetail = () => {
   }
 
   const color = insight ? categoryColor(insight.category) : '#00C896'
+  const heroSources = insight
+    ? getInsightImageSources(insight.coverImageUrl, insight.category, insight.slug)
+    : []
+  const heroSrc = heroSources[heroIdx] ?? null
 
   return (
     <div className="overflow-x-hidden">
@@ -187,19 +241,27 @@ const InsightDetail = () => {
 
       {/* ── Hero / cover ─────────────────────────────────────────────────────── */}
       <div
-        className="relative h-72 sm:h-96 w-full flex items-end"
-        style={{
-          background: insight?.coverImageUrl
-            ? `url(${insight.coverImageUrl}) center/cover no-repeat`
-            : `linear-gradient(135deg, #061818 0%, #091F1F 60%, ${color}22 100%)`,
-        }}
+        className="relative h-72 sm:h-96 w-full flex items-end overflow-hidden"
+        style={{ background: `linear-gradient(135deg, #061818 0%, #091F1F 60%, ${color}22 100%)` }}
       >
-        {/* Dark overlay */}
+        {/* Cover image with fallback chain (admin → Unsplash → gradient) */}
+        {heroSrc && (
+          <img
+            src={heroSrc}
+            alt=""
+            aria-hidden="true"
+            onError={() => setHeroIdx(i => i + 1)}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+
+        {/* Dark gradient overlay for text readability */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(2,13,13,0.85) 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, rgba(6,20,20,0.25) 0%, rgba(2,13,13,0.90) 100%)' }}
           aria-hidden="true"
         />
+
         <div className="relative z-10 max-w-3xl mx-auto w-full px-6 pb-8">
           <Link
             to="/insights"
@@ -210,18 +272,14 @@ const InsightDetail = () => {
             </svg>
             All Insights
           </Link>
-          {isLoading ? (
-            <SkeletonBox className="h-8 w-3/4" />
-          ) : insight ? (
+          {insight && (
             <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">{insight.title}</h1>
-          ) : null}
+          )}
         </div>
       </div>
 
       {/* ── Article body ─────────────────────────────────────────────────────── */}
-      {isLoading ? (
-        <DetailSkeleton />
-      ) : insight ? (
+      {insight && (
         <motion.article
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -276,7 +334,7 @@ const InsightDetail = () => {
             </Link>
           </div>
         </motion.article>
-      ) : null}
+      )}
 
       {/* ── Related articles ─────────────────────────────────────────────────── */}
       {related.length > 0 && (

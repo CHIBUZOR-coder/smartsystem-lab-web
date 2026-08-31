@@ -3,19 +3,21 @@ import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
-import { SkeletonCard } from '../components/ui/SkeletonBox'
+import SkeletonBox from '../components/ui/SkeletonBox'
 import SeoHead from '../components/ui/SeoHead'
+import { getInsightImageSources } from '../lib/insightVisuals'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Insight {
-  id:          string
-  slug:        string
-  title:       string
-  excerpt:     string
-  category:    string
-  tags:        string[]
-  publishedAt: string | null
+  id:             string
+  slug:           string
+  title:          string
+  excerpt:        string
+  category:       string
+  tags:           string[]
+  publishedAt:    string | null
+  coverImageUrl:  string | null
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -39,9 +41,9 @@ function categoryColor(cat: string): string {
   return CATEGORY_COLORS[cat] ?? '#00C896'
 }
 
-// ─── Category gradient header (when no cover image) ───────────────────────────
+// ─── Gradient fallback header (shown when all image sources fail) ─────────────
 
-function CardHeader({ insight }: { insight: Insight }) {
+function GradientHeader({ insight }: { insight: Insight }) {
   const color = categoryColor(insight.category)
   return (
     <div
@@ -52,8 +54,7 @@ function CardHeader({ insight }: { insight: Insight }) {
       }}
     >
       <div className="h-full flex items-center justify-center">
-        <span className="text-4xl opacity-20 font-black uppercase tracking-widest"
-          style={{ color }}>
+        <span className="text-4xl opacity-20 font-black uppercase tracking-widest" style={{ color }}>
           {insight.category.slice(0, 2).toUpperCase()}
         </span>
       </div>
@@ -63,7 +64,12 @@ function CardHeader({ insight }: { insight: Insight }) {
 
 // ─── Insight card ─────────────────────────────────────────────────────────────
 
-const InsightCard = ({ insight, index }: { insight: Insight; index: number }) => (
+function InsightCard({ insight, index }: { insight: Insight; index: number }) {
+  const sources = getInsightImageSources(insight.coverImageUrl, insight.category, insight.slug)
+  const [srcIdx, setSrcIdx] = useState(0)
+  const imgSrc = sources[srcIdx] ?? null
+
+  return (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -88,9 +94,20 @@ const InsightCard = ({ insight, index }: { insight: Insight; index: number }) =>
         aria-hidden="true"
       />
 
-      {/* Header */}
-      <div className="relative z-10 overflow-hidden flex-shrink-0">
-        <CardHeader insight={insight} />
+      {/* Header image with fallback chain */}
+      <div className="relative z-10 h-44 overflow-hidden flex-shrink-0">
+        {imgSrc ? (
+          <img
+            src={imgSrc}
+            alt={insight.title}
+            onError={() => setSrcIdx(i => i + 1)}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        ) : (
+          <GradientHeader insight={insight} />
+        )}
+        {/* Dark overlay so text on top remains readable */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
       </div>
 
       {/* Body */}
@@ -143,6 +160,67 @@ const InsightCard = ({ insight, index }: { insight: Insight; index: number }) =>
       </div>
     </Link>
   </motion.div>
+  )
+}
+
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
+
+const InsightsPageSkeleton = () => (
+  <div className="overflow-x-hidden" aria-hidden="true">
+    {/* Hero */}
+    <section
+      className="relative py-24 sm:py-32 overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #0A2828 0%, #071A1A 100%)' }}
+    >
+      <div className="relative z-10 max-w-4xl mx-auto px-6 space-y-4">
+        <div className="h-3 w-16 rounded-full bg-[#00C896]/20 animate-pulse" />
+        <div className="h-12 w-[440px] max-w-full rounded-lg bg-[#0D2424] animate-pulse" />
+        <div className="h-4 w-full max-w-lg rounded bg-[#0D2424] animate-pulse" />
+        <div className="h-4 w-96 max-w-full rounded bg-[#0D2424] animate-pulse" />
+      </div>
+    </section>
+
+    {/* Filter bar */}
+    <section className="sticky top-[64px] z-30 bg-brand-bg border-b border-brand-border">
+      <div className="max-w-6xl mx-auto px-6 py-3 flex gap-2 overflow-x-hidden">
+        {[48, 36, 80, 96, 72, 112, 88].map((w, i) => (
+          <div key={i} className="h-8 rounded-full skeleton flex-shrink-0" style={{ width: w }} />
+        ))}
+      </div>
+    </section>
+
+    {/* Article grid */}
+    <section className="py-16 bg-brand-bg">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className="rounded-2xl border border-brand-border bg-brand-surface overflow-hidden flex flex-col">
+              {/* Colored header strip */}
+              <div className="h-44 bg-[#0A2020] animate-pulse flex-shrink-0" />
+              {/* Body */}
+              <div className="p-6 space-y-3 flex-1">
+                <div className="flex items-center gap-2">
+                  <SkeletonBox className="h-5 w-24" rounded="full" />
+                  <SkeletonBox className="h-3 w-20" />
+                </div>
+                <SkeletonBox className="h-4 w-full" />
+                <SkeletonBox className="h-4 w-4/5" />
+                <SkeletonBox className="h-3 w-full" />
+                <SkeletonBox className="h-3 w-5/6" />
+                <SkeletonBox className="h-3 w-4/5" />
+                <div className="flex gap-1.5 pt-1">
+                  <SkeletonBox className="h-5 w-12" rounded="sm" />
+                  <SkeletonBox className="h-5 w-14" rounded="sm" />
+                  <SkeletonBox className="h-5 w-10" rounded="sm" />
+                </div>
+                <SkeletonBox className="h-3 w-24 mt-1" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
 )
 
 // ─── Insights page ────────────────────────────────────────────────────────────
@@ -166,6 +244,8 @@ const Insights = () => {
     if (!data) return []
     return activeCategory === 'All' ? data : data.filter(i => i.category === activeCategory)
   }, [data, activeCategory])
+
+  if (isLoading) return <InsightsPageSkeleton />
 
   return (
     <div className="overflow-x-hidden">
@@ -240,12 +320,6 @@ const Insights = () => {
       {/* ── Article grid ─────────────────────────────────────────────────────── */}
       <section className="py-16 bg-brand-bg">
         <div className="max-w-6xl mx-auto px-6">
-          {isLoading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
-            </div>
-          )}
-
           {isError && (
             <div className="text-center py-20">
               <p className="text-brand-text-muted">Unable to load articles. Please try again later.</p>

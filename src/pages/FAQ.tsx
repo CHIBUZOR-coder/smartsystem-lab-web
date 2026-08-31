@@ -80,15 +80,17 @@ const AccordionItem = ({ item, isOpen, onToggle }: {
   </div>
 )
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
+// ─── Accordion skeleton ───────────────────────────────────────────────────────
 
-const FaqSkeleton = () => (
-  <div className="space-y-3">
-    {Array.from({ length: 6 }, (_, i) => (
+const FAQ_WIDTHS = ['w-3/4', 'w-2/3', 'w-4/5', 'w-3/5', 'w-4/5', 'w-2/3', 'w-3/4', 'w-1/2'] as const
+
+const FaqAccordionSkeleton = () => (
+  <div className="space-y-3" aria-hidden="true">
+    {FAQ_WIDTHS.map((w, i) => (
       <div key={i} className="rounded-xl border border-brand-border bg-brand-surface px-6 py-5">
         <div className="flex items-center justify-between gap-4">
-          <SkeletonBox className={`h-4 ${i % 3 === 0 ? 'w-3/4' : i % 3 === 1 ? 'w-2/3' : 'w-4/5'}`} />
-          <SkeletonBox className="h-7 w-7 flex-shrink-0" rounded="full" />
+          <SkeletonBox className={`h-4 ${w}`} />
+          <div className="w-7 h-7 rounded-full skeleton flex-shrink-0" />
         </div>
       </div>
     ))}
@@ -161,15 +163,15 @@ const FAQ = () => {
       {/* ── Accordion ───────────────────────────────────────────────────────── */}
       <section className="py-20 bg-brand-bg">
         <div className="max-w-3xl mx-auto px-6">
-          {isLoading && <FaqSkeleton />}
+          {isLoading && <FaqAccordionSkeleton />}
 
-          {isError && (
+          {!isLoading && isError && (
             <div className="text-center py-16">
               <p className="text-brand-text-muted">Unable to load FAQ. Please try again later.</p>
             </div>
           )}
 
-          {!isLoading && !isError && data?.length === 0 && (
+          {!isLoading && !isError && !data?.length && (
             <div className="text-center py-16">
               <p className="text-brand-text-muted">No questions yet. Check back soon.</p>
             </div>

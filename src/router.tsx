@@ -1,5 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import PageSkeleton from './components/ui/PageSkeleton'
+import AdminPageSkeleton from './components/ui/AdminPageSkeleton'
 
 // Public layout + pages (lazy loaded)
 import App from './App'
@@ -31,13 +33,8 @@ const AdminInsights   = lazy(() => import('./pages/admin/AdminInsights'))
 const AdminFaq        = lazy(() => import('./pages/admin/AdminFaq'))
 const AdminLeads      = lazy(() => import('./pages/admin/AdminLeads'))
 
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[40vh]">
-    <div className="w-6 h-6 border-2 border-brand-green border-t-transparent rounded-full animate-spin" />
-  </div>
-)
-
-const wrap = (el: React.ReactNode) => <Suspense fallback={<PageLoader />}>{el}</Suspense>
+const wrap      = (el: React.ReactNode) => <Suspense fallback={<PageSkeleton />}>{el}</Suspense>
+const wrapAdmin = (el: React.ReactNode) => <Suspense fallback={<AdminPageSkeleton />}>{el}</Suspense>
 
 const router = createBrowserRouter([
   // ── Public site ────────────────────────────────────────────────────────────
@@ -81,12 +78,12 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
-      { index: true,      element: wrap(<AdminDashboard />) },
-      { path: 'products', element: wrap(<AdminProducts />) },
-      { path: 'team',     element: wrap(<AdminTeam />) },
-      { path: 'insights', element: wrap(<AdminInsights />) },
-      { path: 'faq',      element: wrap(<AdminFaq />) },
-      { path: 'leads',    element: wrap(<AdminLeads />) },
+      { index: true,      element: wrapAdmin(<AdminDashboard />) },
+      { path: 'products', element: wrapAdmin(<AdminProducts />) },
+      { path: 'team',     element: wrapAdmin(<AdminTeam />) },
+      { path: 'insights', element: wrapAdmin(<AdminInsights />) },
+      { path: 'faq',      element: wrapAdmin(<AdminFaq />) },
+      { path: 'leads',    element: wrapAdmin(<AdminLeads />) },
     ],
   },
 ])

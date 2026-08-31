@@ -1,10 +1,11 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
 import Badge from '../components/ui/Badge'
 import SkeletonBox from '../components/ui/SkeletonBox'
-import { PRODUCT_VISUALS, FALLBACK_VISUAL } from '../lib/productVisuals'
+import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources, getProductVideoUrl } from '../lib/productVisuals'
 import SeoHead from '../components/ui/SeoHead'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -56,18 +57,77 @@ const ArrowRightIcon = () => (
   </svg>
 )
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
 
-const DetailSkeleton = () => (
-  <div className="min-h-screen bg-[#061414] animate-pulse">
-    <div className="h-72 bg-[#0A2828]" />
-    <div className="max-w-5xl mx-auto px-6 py-12 space-y-8">
-      <SkeletonBox className="h-8 w-64" rounded="lg" />
-      <SkeletonBox className="h-4 w-full" />
-      <SkeletonBox className="h-4 w-5/6" />
-      <SkeletonBox className="h-4 w-4/6" />
-      <div className="grid sm:grid-cols-2 gap-4 pt-4">
-        {[0,1,2,3,4,5].map(i => <SkeletonBox key={i} className="h-14" rounded="lg" />)}
+const ProductDetailPageSkeleton = () => (
+  <div className="min-h-screen bg-[#061414]" aria-hidden="true">
+    {/* Hero: mimics pt-24 pb-20 with dark gradient */}
+    <section className="relative pt-24 pb-20 overflow-hidden bg-[#0A2020]">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0A2828] to-[#061414]" />
+      <div className="relative max-w-5xl mx-auto px-6 space-y-4">
+        {/* Back nav */}
+        <div className="h-4 w-28 rounded bg-[#132F2F] animate-pulse mb-10" />
+        {/* Category + status */}
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-6 w-28 rounded-full bg-[#132F2F] animate-pulse" />
+          <div className="h-6 w-20 rounded-full bg-[#132F2F] animate-pulse" />
+        </div>
+        {/* Product name */}
+        <div className="h-11 w-80 rounded-lg bg-[#132F2F] animate-pulse max-w-full" />
+        <div className="h-11 w-56 rounded-lg bg-[#132F2F] animate-pulse max-w-full" />
+        {/* Tagline */}
+        <div className="h-5 w-96 max-w-full rounded bg-[#132F2F] animate-pulse" />
+        <div className="h-5 w-72 max-w-full rounded bg-[#132F2F] animate-pulse" />
+        {/* CTA button */}
+        <div className="h-12 w-40 rounded-xl bg-[#00C896]/20 animate-pulse mt-8" />
+      </div>
+    </section>
+
+    {/* Main content */}
+    <div className="max-w-5xl mx-auto px-6 py-16 space-y-16">
+      {/* Description */}
+      <div className="space-y-3">
+        <div className="h-7 w-44 rounded-lg bg-[#0D2424] animate-pulse" />
+        <div className="h-4 w-full rounded bg-[#0D2424] animate-pulse" />
+        <div className="h-4 w-full rounded bg-[#0D2424] animate-pulse" />
+        <div className="h-4 w-3/4 rounded bg-[#0D2424] animate-pulse" />
+      </div>
+
+      {/* Features grid (6 items, 2 cols) */}
+      <div className="space-y-4">
+        <div className="h-6 w-36 rounded bg-[#0D2424] animate-pulse" />
+        <div className="grid sm:grid-cols-2 gap-3">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className="h-14 rounded-xl bg-[#0D2424] animate-pulse" />
+          ))}
+        </div>
+      </div>
+
+      {/* Target users */}
+      <div className="space-y-3">
+        <div className="h-6 w-32 rounded bg-[#0D2424] animate-pulse" />
+        {Array.from({ length: 3 }, (_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-[#00C896]/20 animate-pulse flex-shrink-0" />
+            <div className={`h-4 rounded bg-[#0D2424] animate-pulse ${['w-56', 'w-72', 'w-48'][i]}`} />
+          </div>
+        ))}
+      </div>
+
+      {/* Related products row */}
+      <div className="space-y-4">
+        <div className="h-6 w-44 rounded bg-[#0D2424] animate-pulse" />
+        <div className="grid sm:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="flex items-center gap-3 p-4 rounded-xl border border-[#1A3D3D] bg-[#0D2424]">
+              <div className="w-14 h-14 rounded-lg bg-[#132F2F] animate-pulse flex-shrink-0" />
+              <div className="space-y-2 flex-1 min-w-0">
+                <div className="h-4 w-3/4 rounded bg-[#132F2F] animate-pulse" />
+                <div className="h-3 w-full rounded bg-[#132F2F] animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   </div>
@@ -76,7 +136,10 @@ const DetailSkeleton = () => (
 // ─── Related card (mini) ──────────────────────────────────────────────────────
 
 const RelatedCard = ({ product }: { product: Product }) => {
-  const visual = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
+  const visual   = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
+  const sources  = getProductImageSources(product.imageUrl, visual)
+  const [srcIdx, setSrcIdx] = useState(0)
+  const imgSrc   = sources[srcIdx] ?? null
   return (
     <Link
       to={`/products/${product.slug}`}
@@ -86,8 +149,8 @@ const RelatedCard = ({ product }: { product: Product }) => {
         className="w-16 h-16 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
         style={{ background: visual.bg }}
       >
-        {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+        {imgSrc ? (
+          <img src={imgSrc} alt={product.name} onError={() => setSrcIdx(i => i + 1)} className="w-full h-full object-cover" />
         ) : (
           <div className="w-12 h-12">{visual.illustration}</div>
         )}
@@ -108,6 +171,8 @@ const RelatedCard = ({ product }: { product: Product }) => {
 const ProductDetail = () => {
   const { slug }   = useParams<{ slug: string }>()
   const navigate   = useNavigate()
+  // must be before any early returns
+  const [heroIdx, setHeroIdx] = useState(0)
 
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ['product', slug],
@@ -130,7 +195,7 @@ const ProductDetail = () => {
     },
   })
 
-  if (isLoading) return <DetailSkeleton />
+  if (isLoading) return <ProductDetailPageSkeleton />
 
   // 404 state
   if (isError || !product) {
@@ -155,6 +220,9 @@ const ProductDetail = () => {
   const features    = toStringArray(product.features)
   const targetUsers = toStringArray(product.targetUsers)
   const related     = allProducts?.filter(p => p.slug !== product.slug) ?? []
+  const heroSources = getProductImageSources(product.imageUrl, visual)
+  const heroSrc     = heroSources[heroIdx] ?? null
+  const videoUrl    = getProductVideoUrl(product.videoUrl, visual)
 
   return (
     <div className="min-h-screen bg-[#061414]">
@@ -174,9 +242,15 @@ const ProductDetail = () => {
             <div className="w-96 h-64 mr-8">{visual.illustration}</div>
           </div>
         )}
-        {product.imageUrl && (
+        {heroSrc && (
           <div className="absolute inset-0 pointer-events-none">
-            <img src={product.imageUrl} alt="" aria-hidden="true" className="w-full h-full object-cover opacity-20" />
+            <img
+              src={heroSrc}
+              alt=""
+              aria-hidden="true"
+              onError={() => setHeroIdx(i => i + 1)}
+              className="w-full h-full object-cover opacity-20"
+            />
           </div>
         )}
 
@@ -240,17 +314,16 @@ const ProductDetail = () => {
           </p>
         </section>
 
-        {/* Video */}
-        {product.videoUrl && (
+        {/* Video — always shown; uses admin video if set, otherwise sample fallback */}
+        {videoUrl && (
           <section>
             <h2 className="text-xl font-bold text-[#E6F5F0] mb-4">See it in action</h2>
             <div className="rounded-2xl overflow-hidden border border-[#1A3D3D] bg-black">
               <video
-                src={product.videoUrl}
+                src={videoUrl}
                 controls
-                poster={product.imageUrl ?? undefined}
-                className="w-full"
-                style={{ maxHeight: '480px' }}
+                poster={heroSrc || undefined}
+                className="w-full aspect-video max-h-[60vh] block object-contain bg-black"
               >
                 Your browser does not support the video element.
               </video>

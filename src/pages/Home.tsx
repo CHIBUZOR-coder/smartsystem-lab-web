@@ -1,11 +1,11 @@
+import { useState, useRef, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion, useInView } from 'framer-motion'
-import { useRef, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../lib/api'
 import ParticleCanvas from '../components/ui/ParticleCanvas'
 import Button from '../components/ui/Button'
-import { PRODUCT_VISUALS, FALLBACK_VISUAL } from '../lib/productVisuals'
+import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources } from '../lib/productVisuals'
 import SeoHead from '../components/ui/SeoHead'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -257,7 +257,10 @@ function StatusBadge({ status }: { status: Product['status'] }) {
 }
 
 function ProductCard({ product, index }: { product: Product; index: number }) {
-  const visual = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
+  const visual   = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
+  const sources  = getProductImageSources(product.imageUrl, visual)
+  const [srcIdx, setSrcIdx] = useState(0)
+  const imgSrc   = sources[srcIdx] ?? null
 
   return (
     <motion.div
@@ -284,10 +287,11 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
 
         {/* Visual header */}
         <div className="relative z-10 h-44 overflow-hidden" style={{ background: visual.bg }}>
-          {product.imageUrl ? (
+          {imgSrc ? (
             <img
-              src={product.imageUrl}
+              src={imgSrc}
               alt={product.name}
+              onError={() => setSrcIdx(i => i + 1)}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               loading="lazy"
             />

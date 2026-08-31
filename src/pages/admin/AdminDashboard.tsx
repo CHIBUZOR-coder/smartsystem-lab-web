@@ -1,8 +1,41 @@
 import { useQuery } from '@tanstack/react-query'
 import api from '../../lib/api'
-import { SkeletonCard } from '../../components/ui/SkeletonBox'
+import SkeletonBox from '../../components/ui/SkeletonBox'
 
 interface Stats { products: number; team: number; insights: number; faq: number; leads: number }
+
+// Stat cards + leads table shaped exactly like AdminDashboard
+const DashboardPageSkeleton = () => (
+  <div aria-hidden="true">
+    <SkeletonBox className="h-8 w-40 mb-6" />
+    {/* 5 stat cards */}
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
+      {Array.from({ length: 5 }, (_, i) => (
+        <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 space-y-2">
+          <SkeletonBox className="h-3 w-20" />
+          <SkeletonBox className="h-8 w-10" />
+        </div>
+      ))}
+    </div>
+    {/* Recent leads table: Name, Email, Company, Reason, Date */}
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="px-5 py-4 border-b border-gray-100">
+        <SkeletonBox className="h-5 w-32" />
+      </div>
+      <div className="divide-y divide-gray-100">
+        {Array.from({ length: 5 }, (_, r) => (
+          <div key={r} className="px-5 py-3 grid grid-cols-5 gap-3 items-center">
+            <SkeletonBox className="h-4 w-full" />
+            <SkeletonBox className="h-3 w-full" />
+            <SkeletonBox className="h-3 w-3/4" />
+            <SkeletonBox className="h-5 w-20 rounded-full" />
+            <SkeletonBox className="h-3 w-16" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)
 
 const StatCard = ({ label, value, color }: { label: string; value: number; color: string }) => (
   <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
@@ -27,31 +60,25 @@ const AdminDashboard = () => {
     id: string; name: string; email: string; reason: string; company?: string; createdAt: string
   }>
 
+  if (isLoading || leadsLoading) return <DashboardPageSkeleton />
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-brand-teal mb-6">Dashboard</h1>
 
-      {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
-          {Array.from({ length: 5 }, (_, i) => <SkeletonCard key={i} />)}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
-          <StatCard label="Products"  value={stats?.products ?? 0}  color="text-brand-teal" />
-          <StatCard label="Team"      value={stats?.team ?? 0}      color="text-brand-teal" />
-          <StatCard label="Articles"  value={stats?.insights ?? 0}  color="text-brand-teal" />
-          <StatCard label="FAQ items" value={stats?.faq ?? 0}       color="text-brand-teal" />
-          <StatCard label="Leads"     value={stats?.leads ?? 0}     color="text-brand-green" />
-        </div>
-      )}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
+        <StatCard label="Products"  value={stats?.products ?? 0}  color="text-brand-teal" />
+        <StatCard label="Team"      value={stats?.team ?? 0}      color="text-brand-teal" />
+        <StatCard label="Articles"  value={stats?.insights ?? 0}  color="text-brand-teal" />
+        <StatCard label="FAQ items" value={stats?.faq ?? 0}       color="text-brand-teal" />
+        <StatCard label="Leads"     value={stats?.leads ?? 0}     color="text-brand-green" />
+      </div>
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
         <div className="px-5 py-4 border-b border-gray-100">
           <h2 className="font-semibold text-brand-teal">Recent Leads</h2>
         </div>
-        {leadsLoading ? (
-          <div className="p-5 space-y-3">{Array.from({ length: 3 }, (_, i) => <SkeletonCard key={i} />)}</div>
-        ) : recentLeads.length === 0 ? (
+        {recentLeads.length === 0 ? (
           <p className="text-gray-400 text-sm p-5">No leads yet.</p>
         ) : (
           <table className="w-full text-sm">

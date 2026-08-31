@@ -73,24 +73,56 @@ export const IllustrationTracker = () => (
 export interface ProductVisual {
   bg: string
   illustration: ReactNode
+  fallbackImageUrl: string // Unsplash — shown until admin uploads a real image
+  fallbackVideoUrl: string // Sample video — shown until admin adds a real video
 }
 
 export const PRODUCT_VISUALS: Record<string, ProductVisual> = {
   'ai-room-manager': {
     bg: 'linear-gradient(135deg, #0A2828 0%, #0D3D3D 60%, #082020 100%)',
     illustration: <IllustrationRoom />,
+    fallbackImageUrl: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200&h=700&fit=crop&q=80',
+    fallbackVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
   },
   'az-energy-monitor': {
     bg: 'linear-gradient(135deg, #071C28 0%, #0D2E42 60%, #071820 100%)',
     illustration: <IllustrationEnergy />,
+    fallbackImageUrl: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&h=700&fit=crop&q=80',
+    fallbackVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
   },
   'az-asset-tracker': {
     bg: 'linear-gradient(135deg, #140A28 0%, #1C1240 60%, #0E0818 100%)',
     illustration: <IllustrationTracker />,
+    fallbackImageUrl: 'https://images.unsplash.com/photo-1553413077-190dd305871c?w=1200&h=700&fit=crop&q=80',
+    fallbackVideoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
   },
 }
 
 export const FALLBACK_VISUAL: ProductVisual = {
   bg: 'linear-gradient(135deg, #0A2828 0%, #0D3535 100%)',
   illustration: null,
+  fallbackImageUrl: '',
+  fallbackVideoUrl: '',
+}
+
+// Priority: admin DB image → Unsplash fallback → illustration (when imgSrc is null)
+// Picsum is excluded — it returns 503 which browsers cache, breaking reloads.
+export function getProductImageSources(
+  imageUrl: string | null,
+  visual: ProductVisual,
+): string[] {
+  const sources: string[] = []
+  // 1. Real admin-uploaded image (Cloudinary or any non-picsum URL)
+  if (imageUrl && !imageUrl.includes('picsum.photos')) sources.push(imageUrl)
+  // 2. Unsplash — always reliable, survives page reloads
+  if (visual.fallbackImageUrl) sources.push(visual.fallbackImageUrl)
+  return sources
+}
+
+// Returns the admin video if set, otherwise the per-product sample video.
+export function getProductVideoUrl(
+  videoUrl: string | null,
+  visual: ProductVisual,
+): string {
+  return videoUrl || visual.fallbackVideoUrl
 }
