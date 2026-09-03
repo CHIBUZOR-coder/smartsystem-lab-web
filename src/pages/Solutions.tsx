@@ -255,7 +255,7 @@ const Solutions = () => (
     <section className="py-20 bg-brand-bg">
       <div className="max-w-6xl mx-auto px-6 space-y-16">
         {SOLUTIONS.map(
-          ({ id, icon, label, headline, description, challenges, howWeHelp, product, productSlug, accent }, i) => (
+          ({ id, icon, label, headline, description, challenges, howWeHelp, product, productSlug, accent }) => (
             <FadeUp key={id} delay={0.05}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start p-8 rounded-2xl border border-brand-border bg-brand-bg-alt">
 

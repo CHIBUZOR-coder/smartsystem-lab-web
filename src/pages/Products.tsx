@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
 import Badge from '../components/ui/Badge'
-import SkeletonBox from '../components/ui/SkeletonBox'
 import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources } from '../lib/productVisuals'
 import SeoHead from '../components/ui/SeoHead'
 

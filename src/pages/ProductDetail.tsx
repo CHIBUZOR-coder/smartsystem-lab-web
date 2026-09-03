@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
 import Badge from '../components/ui/Badge'
-import SkeletonBox from '../components/ui/SkeletonBox'
 import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources, getProductVideoUrl } from '../lib/productVisuals'
 import SeoHead from '../components/ui/SeoHead'
 
