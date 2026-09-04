@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import api from '../../lib/api'
 import { ADMIN_BASE } from '../../lib/adminPath'
 import Button from '../../components/ui/Button'
+import { useThemeStore } from '../../store/themeStore'
+import ThemeToggle from '../../components/ui/ThemeToggle'
 
 interface ResetForm { newPassword: string; confirmPassword: string }
 
@@ -17,6 +19,8 @@ const ResetPassword = () => {
   const [error, setError]     = useState('')
   const [done, setDone]       = useState(false)
   const [showPass, setShowPass] = useState(false)
+  const { resolvedTheme }       = useThemeStore()
+  const isDark                  = resolvedTheme() === 'dark'
 
   const onSubmit = async (data: ResetForm) => {
     setLoading(true)
@@ -35,7 +39,8 @@ const ResetPassword = () => {
 
   if (!token) {
     return (
-      <div className="force-light min-h-screen bg-brand-teal flex items-center justify-center p-4">
+      <div className="relative min-h-screen bg-[#062020] flex items-center justify-center p-4">
+        <ThemeToggle isDark={isDark} className="absolute top-4 right-4 text-white/50 hover:text-white hover:bg-white/10" />
         <div className="bg-brand-surface rounded-2xl p-6 shadow-xl text-center space-y-3 max-w-sm w-full">
           <p className="text-brand-text-h font-semibold">Invalid reset link</p>
           <Link to={`${ADMIN_BASE}/forgot-password`} className="text-xs text-brand-green hover:underline block">
@@ -47,7 +52,8 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="force-light min-h-screen bg-brand-teal flex items-center justify-center p-4">
+    <div className="relative min-h-screen bg-[#062020] flex items-center justify-center p-4">
+      <ThemeToggle isDark={isDark} className="absolute top-4 right-4 text-white/50 hover:text-white hover:bg-white/10" />
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-brand-green mb-4">
@@ -78,7 +84,7 @@ const ResetPassword = () => {
                     <input
                       type={showPass ? 'text' : 'password'}
                       autoComplete="new-password"
-                      className="w-full px-3 py-2.5 pr-10 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                      className="w-full px-3 py-2.5 pr-10 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                       {...register('newPassword', {
                         required: 'Password is required',
                         minLength: { value: 8, message: 'At least 8 characters' },
@@ -98,7 +104,7 @@ const ResetPassword = () => {
                       </svg>
                     </button>
                   </div>
-                  {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>}
+                  {errors.newPassword && <p className="text-brand-danger text-xs mt-1">{errors.newPassword.message}</p>}
                 </div>
 
                 <div>
@@ -106,17 +112,17 @@ const ResetPassword = () => {
                   <input
                     type={showPass ? 'text' : 'password'}
                     autoComplete="new-password"
-                    className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                    className="w-full px-3 py-2.5 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                     {...register('confirmPassword', {
                       required: 'Please confirm your password',
                       validate: v => v === watch('newPassword') || 'Passwords do not match',
                     })}
                   />
-                  {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+                  {errors.confirmPassword && <p className="text-brand-danger text-xs mt-1">{errors.confirmPassword.message}</p>}
                 </div>
 
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-3 py-2">
+                  <div className="bg-brand-danger/10 border border-brand-danger/30 text-brand-danger text-sm rounded-lg px-3 py-2">
                     {error}
                   </div>
                 )}

@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import api from '../../lib/api'
 import { ADMIN_BASE } from '../../lib/adminPath'
 import Button from '../../components/ui/Button'
+import { useThemeStore } from '../../store/themeStore'
+import ThemeToggle from '../../components/ui/ThemeToggle'
 
 interface ForgotForm { email: string }
 
@@ -12,6 +14,8 @@ const ForgotPassword = () => {
   const [loading, setLoading]   = useState(false)
   const [resetUrl, setResetUrl] = useState('')
   const [error, setError]       = useState('')
+  const { resolvedTheme }       = useThemeStore()
+  const isDark                  = resolvedTheme() === 'dark'
 
   const onSubmit = async (data: ForgotForm) => {
     setLoading(true)
@@ -29,7 +33,8 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="force-light min-h-screen bg-brand-teal flex items-center justify-center p-4">
+    <div className="relative min-h-screen bg-[#062020] flex items-center justify-center p-4">
+      <ThemeToggle isDark={isDark} className="absolute top-4 right-4 text-white/50 hover:text-white hover:bg-white/10" />
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-brand-green mb-4">
@@ -76,14 +81,14 @@ const ForgotPassword = () => {
                   <input
                     type="email"
                     autoComplete="email"
-                    className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                    className="w-full px-3 py-2.5 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                     {...register('email', { required: 'Email is required' })}
                   />
-                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                  {errors.email && <p className="text-brand-danger text-xs mt-1">{errors.email.message}</p>}
                 </div>
 
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-3 py-2">
+                  <div className="bg-brand-danger/10 border border-brand-danger/30 text-brand-danger text-sm rounded-lg px-3 py-2">
                     {error}
                   </div>
                 )}

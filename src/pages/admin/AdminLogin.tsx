@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useAuthStore } from '../../store/authStore'
+import { useThemeStore } from '../../store/themeStore'
 import api from '../../lib/api'
 import { ADMIN_BASE } from '../../lib/adminPath'
 import Button from '../../components/ui/Button'
+import ThemeToggle from '../../components/ui/ThemeToggle'
 
 interface LoginForm { email: string; password: string }
 
@@ -25,6 +27,8 @@ const AdminLogin = () => {
   const [loading, setLoading]   = useState(false)
   const [showPass, setShowPass] = useState(false)
   const { setAuth }             = useAuthStore()
+  const { resolvedTheme }       = useThemeStore()
+  const isDark                  = resolvedTheme() === 'dark'
   const navigate                = useNavigate()
   const location                = useLocation()
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? ADMIN_BASE
@@ -45,7 +49,8 @@ const AdminLogin = () => {
   }
 
   return (
-    <div className="force-light min-h-screen bg-brand-teal flex items-center justify-center p-4">
+    <div className="relative min-h-screen bg-[#062020] flex items-center justify-center p-4">
+      <ThemeToggle isDark={isDark} className="absolute top-4 right-4 text-white/50 hover:text-white hover:bg-white/10" />
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -65,10 +70,10 @@ const AdminLogin = () => {
               <input
                 type="email"
                 autoComplete="email"
-                className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                className="w-full px-3 py-2.5 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                 {...register('email', { required: 'Email is required' })}
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+              {errors.email && <p className="text-brand-danger text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -77,7 +82,7 @@ const AdminLogin = () => {
                 <input
                   type={showPass ? 'text' : 'password'}
                   autoComplete="current-password"
-                  className="w-full px-3 py-2.5 pr-10 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                  className="w-full px-3 py-2.5 pr-10 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                   {...register('password', { required: 'Password is required' })}
                 />
                 <button
@@ -89,11 +94,11 @@ const AdminLogin = () => {
                   <EyeIcon open={showPass} />
                 </button>
               </div>
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+              {errors.password && <p className="text-brand-danger text-xs mt-1">{errors.password.message}</p>}
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-3 py-2">
+              <div className="bg-brand-danger/10 border border-brand-danger/30 text-brand-danger text-sm rounded-lg px-3 py-2">
                 {error}
               </div>
             )}
