@@ -27,7 +27,7 @@ const VideoUpload = ({ value, onChange, label = 'Product Video' }: VideoUploadPr
         '/api/upload/video?folder=products',
         body,
         {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 'Content-Type': undefined },
           onUploadProgress: (e) => {
             if (e.total) setProgress(Math.round((e.loaded / e.total) * 100))
           },

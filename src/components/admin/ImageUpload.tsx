@@ -29,7 +29,7 @@ const ImageUpload = ({ folder, value, onChange, label = 'Image' }: ImageUploadPr
     try {
       setUploading(true)
       const { data } = await api.post<{ url: string }>(`/api/upload?folder=${folder}`, body, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 'Content-Type': undefined },
       })
       onChange(data.url)
       setPreview(null) // use the real Cloudinary URL from now on

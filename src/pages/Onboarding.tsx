@@ -84,7 +84,9 @@ const PhotoUploader = ({
     try {
       const form = new FormData()
       form.append('image', file)
-      const res = await api.post<{ url: string }>(`/api/onboarding/photo?token=${token}`, form)
+      const res = await api.post<{ url: string }>(`/api/onboarding/photo?token=${token}`, form, {
+        headers: { 'Content-Type': undefined },
+      })
       onChange(res.data.url)
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } } }
