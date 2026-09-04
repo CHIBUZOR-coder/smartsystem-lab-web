@@ -68,15 +68,16 @@ const TeamTableSkeleton = () => (
         </div>
       </div>
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="bg-gray-50 px-5 py-3 grid grid-cols-5 gap-4 border-b border-gray-100">
-          {['w-10', 'w-1/3', 'w-1/4', 'w-16', 'w-1/4'].map((w, i) => (
+        <div className="bg-gray-50 px-5 py-3 grid grid-cols-6 gap-4 border-b border-gray-100">
+          {['w-10', 'w-9', 'w-1/3', 'w-1/4', 'w-16', 'w-1/4'].map((w, i) => (
             <SkeletonBox key={i} className={`h-3 ${w}`} />
           ))}
         </div>
         <div className="divide-y divide-gray-100">
           {Array.from({ length: 5 }, (_, r) => (
-            <div key={r} className="px-5 py-4 grid grid-cols-5 gap-4 items-center">
+            <div key={r} className="px-5 py-4 grid grid-cols-6 gap-4 items-center">
               <SkeletonBox className="h-3 w-6 mx-auto" />
+              <SkeletonBox className="h-9 w-9 rounded-full" />
               <SkeletonBox className="h-4 w-3/4" />
               <SkeletonBox className="h-3 w-2/3" />
               <SkeletonBox className="h-5 w-16 rounded-full" />
@@ -192,7 +193,7 @@ const AdminTeam = () => {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
-                    {['Order', 'Name', 'Title', 'Visible', 'Actions'].map(h => (
+                    {['Order', 'Photo', 'Name', 'Title', 'Visible', 'Actions'].map(h => (
                       <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
@@ -201,6 +202,15 @@ const AdminTeam = () => {
                   {members.map(m => (
                     <tr key={m.id} className="hover:bg-gray-50">
                       <td className="px-5 py-3 text-gray-400 text-center w-16">{m.order}</td>
+                      <td className="px-5 py-3">
+                        {m.photoUrl ? (
+                          <img src={m.photoUrl} alt={m.name} className="h-9 w-9 rounded-full object-cover" />
+                        ) : (
+                          <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-400">
+                            {m.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </td>
                       <td className="px-5 py-3 font-medium text-brand-teal">{m.name}</td>
                       <td className="px-5 py-3 text-gray-600">{m.title}</td>
                       <td className="px-5 py-3">
