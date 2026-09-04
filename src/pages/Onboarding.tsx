@@ -71,6 +71,7 @@ const PhotoUploader = ({
 }) => {
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview]     = useState(value)
+  const [uploadError, setUploadError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { setPreview(value) }, [value])
@@ -79,14 +80,15 @@ const PhotoUploader = ({
     const previewUrl = URL.createObjectURL(file)
     setPreview(previewUrl)
     setUploading(true)
+    setUploadError('')
     try {
       const form = new FormData()
       form.append('image', file)
-      const res = await api.post<{ url: string }>(`/api/onboarding/photo?token=${token}`, form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      const res = await api.post<{ url: string }>(`/api/onboarding/photo?token=${token}`, form)
       onChange(res.data.url)
-    } catch {
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } }
+      setUploadError(e.response?.data?.error ?? 'Photo upload failed. Please try again.')
       setPreview(value)
     } finally {
       setUploading(false)
@@ -140,6 +142,9 @@ const PhotoUploader = ({
         >
           {preview ? 'Change photo' : 'Upload photo'}
         </button>
+        {uploadError && (
+          <p role="alert" className="mt-1.5 text-xs text-red-400">{uploadError}</p>
+        )}
       </div>
       <input
         ref={inputRef}
