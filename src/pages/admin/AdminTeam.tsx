@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import api from '../../lib/api'
@@ -6,6 +6,7 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import SkeletonBox from '../../components/ui/SkeletonBox'
 import { AdminTableSkeleton } from '../../components/ui/SkeletonBox'
+import { POSITIONS } from '../../lib/positions'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,6 +14,10 @@ interface TeamMember {
   id: string; name: string; title: string; bio: string
   photoUrl?: string; linkedIn?: string; order: number; isVisible: boolean
 }
+
+// `position` drives the Title field's dropdown but isn't sent to the API —
+// only the resolved `title` string is.
+type TeamMemberForm = TeamMember & { position: string }
 
 interface StaffInvite {
   id:        string
@@ -127,15 +132,28 @@ const AdminTeam = () => {
     queryFn:  () => api.get('/api/admin/invites').then(r => r.data),
   })
 
-  const { register, handleSubmit, reset } = useForm<TeamMember>()
+  const { register, handleSubmit, reset, watch, setValue } = useForm<TeamMemberForm>()
+  const position = watch('position')
 
-  const openAdd  = () => { setEditing(null); reset({ order: 0, isVisible: true }); setModal(true) }
-  const openEdit = (m: TeamMember) => { setEditing(m); reset(m); setModal(true) }
+  // Keep `title` (the value actually sent to the API) in sync with the
+  // dropdown selection — only the "Other" text input sets it directly.
+  useEffect(() => {
+    if (position && position !== 'other') setValue('title', position)
+  }, [position, setValue])
+
+  const openAdd  = () => { setEditing(null); reset({ order: 0, isVisible: true, position: '' }); setModal(true) }
+  const openEdit = (m: TeamMember) => {
+    setEditing(m)
+    const matched = POSITIONS.find(p => p.label === m.title)
+    reset({ ...m, position: matched ? matched.label : 'other' })
+    setModal(true)
+  }
 
   const save = useMutation({
-    mutationFn: (d: TeamMember) => editing
-      ? api.put(`/api/admin/team/${editing.id}`, d)
-      : api.post('/api/admin/team', d),
+    mutationFn: (d: TeamMemberForm) => {
+      const { position: _position, ...rest } = d
+      return editing ? api.put(`/api/admin/team/${editing.id}`, rest) : api.post('/api/admin/team', rest)
+    },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-team'] }); setModal(false) },
   })
 
@@ -284,9 +302,33 @@ const AdminTeam = () => {
       {/* ── Member form modal ─────────────────────────────────────────── */}
       <Modal open={modalOpen} onClose={() => setModal(false)} title={editing ? 'Edit Member' : 'Add Member'} maxWidth="max-w-lg">
         <form onSubmit={handleSubmit(d => save.mutate(d))} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-brand-text-h mb-1">Full Name</label>
+            <input className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              {...register('name')} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-brand-text-h mb-1">Position</label>
+            <select
+              className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              defaultValue=""
+              {...register('position')}
+            >
+              <option value="" disabled>Select a position…</option>
+              {POSITIONS.map(p => (
+                <option key={p.label} value={p.label}>{p.label}</option>
+              ))}
+              <option value="other">Other (not listed)</option>
+            </select>
+          </div>
+          {position === 'other' && (
+            <div>
+              <label className="block text-sm font-medium text-brand-text-h mb-1">Job Title</label>
+              <input className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+                {...register('title')} />
+            </div>
+          )}
           {[
-            { name: 'name'     as const, label: 'Full Name' },
-            { name: 'title'    as const, label: 'Job Title' },
             { name: 'photoUrl' as const, label: 'Photo URL' },
             { name: 'linkedIn' as const, label: 'LinkedIn URL' },
           ].map(f => (
