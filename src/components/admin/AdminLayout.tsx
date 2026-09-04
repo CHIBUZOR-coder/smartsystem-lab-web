@@ -66,10 +66,16 @@ const SidebarContent = ({ onNav, onLogout, admin, isDark }: {
         <p className="text-white text-sm font-medium truncate">{admin?.name ?? 'Admin'}</p>
         <p className="text-white/40 text-xs truncate">{admin?.email}</p>
       </div>
+      <ThemeToggle
+        isDark={isDark}
+        showLabel
+        className="w-full justify-center bg-white/5 text-white/70 hover:text-white hover:bg-white/10"
+      />
       <div className="flex items-center justify-between">
         <Link
           to="/"
           onClick={onNav}
+          title="Open the public website in this tab"
           className="text-xs text-white/50 hover:text-brand-green transition-colors flex items-center gap-1"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -77,15 +83,13 @@ const SidebarContent = ({ onNav, onLogout, admin, isDark }: {
           </svg>
           View site
         </Link>
-        <div className="flex items-center gap-1">
-          <ThemeToggle isDark={isDark} className="!p-1 text-white/50 hover:text-white hover:bg-white/10" />
-          <button
-            onClick={onLogout}
-            className="text-xs text-white/50 hover:text-brand-green transition-colors"
-          >
-            Sign out →
-          </button>
-        </div>
+        <button
+          onClick={onLogout}
+          title="Sign out of the admin panel"
+          className="text-xs text-white/50 hover:text-brand-green transition-colors"
+        >
+          Sign out →
+        </button>
       </div>
     </div>
   </>
@@ -141,6 +145,7 @@ const AdminLayout = () => {
               {/* Close button */}
               <button
                 onClick={() => setDrawerOpen(false)}
+                title="Close menu"
                 aria-label="Close menu"
                 className="absolute top-4 right-4 text-white/50 hover:text-white p-1"
               >
@@ -166,6 +171,7 @@ const AdminLayout = () => {
         <header className="lg:hidden flex items-center gap-3 px-4 h-14 bg-brand-surface border-b border-brand-border shrink-0">
           <button
             onClick={() => setDrawerOpen(true)}
+            title="Open menu"
             aria-label="Open menu"
             className="p-2 rounded-lg text-brand-text-muted hover:text-brand-text-h hover:bg-brand-bg-alt transition-colors"
           >

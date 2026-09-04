@@ -22,7 +22,7 @@ const DashboardPageSkeleton = () => (
       <div className="px-5 py-4 border-b border-brand-border">
         <SkeletonBox className="h-5 w-32" />
       </div>
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-brand-border">
         {Array.from({ length: 5 }, (_, r) => (
           <div key={r} className="px-5 py-3 grid grid-cols-5 gap-3 items-center">
             <SkeletonBox className="h-4 w-full" />
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-brand-border">
               {recentLeads.map(lead => (
                 <tr key={lead.id} className="hover:bg-brand-bg-alt">
                   <td className="px-5 py-3 font-medium text-brand-teal">{lead.name}</td>

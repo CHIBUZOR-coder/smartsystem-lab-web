@@ -216,10 +216,10 @@ const AdminTeam = () => {
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <h1 className="text-xl sm:text-2xl font-bold text-brand-teal">Team Members</h1>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => openInviteModal('new')} size="sm" variant="secondary">
+            <Button onClick={() => openInviteModal('new')} size="sm" variant="secondary" title="Generate a one-time link for a new staff member to fill in their own profile">
               Send Onboarding Link
             </Button>
-            <Button onClick={openAdd} size="sm">+ Add Member</Button>
+            <Button onClick={openAdd} size="sm" title="Add a team member directly, without an onboarding link">+ Add Member</Button>
           </div>
         </div>
 
@@ -257,9 +257,9 @@ const AdminTeam = () => {
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex gap-3">
-                          <button onClick={() => openEdit(m)} className="text-xs text-brand-green hover:underline">Edit</button>
-                          <button onClick={() => openInviteModal(m.id)} className="text-xs text-blue-500 hover:underline">Send edit link</button>
-                          <button onClick={() => setDeleteId(m.id)} className="text-xs text-brand-danger hover:underline">Delete</button>
+                          <button onClick={() => openEdit(m)} title={`Edit ${m.name}'s details`} className="text-xs text-brand-green hover:underline">Edit</button>
+                          <button onClick={() => openInviteModal(m.id)} title={`Generate a link for ${m.name} to update their own profile`} className="text-xs text-blue-500 hover:underline">Send edit link</button>
+                          <button onClick={() => setDeleteId(m.id)} title={`Permanently remove ${m.name} from the team`} className="text-xs text-brand-danger hover:underline">Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -289,7 +289,7 @@ const AdminTeam = () => {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-brand-border">
                   {activeInvites.map(inv => (
                     <tr key={inv.id} className="hover:bg-brand-bg-alt">
                       <td className="px-5 py-3 text-brand-text-body font-medium">
@@ -304,6 +304,7 @@ const AdminTeam = () => {
                       <td className="px-5 py-3">
                         <button
                           onClick={() => revokeInvite.mutate(inv.id)}
+                          title="Invalidate this link so it can no longer be used"
                           className="text-xs text-brand-danger hover:underline"
                         >
                           Revoke
@@ -377,8 +378,8 @@ const AdminTeam = () => {
           </div>
           {save.isError && <p className="text-brand-danger text-sm">Save failed.</p>}
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="ghost" onClick={() => setModal(false)}>Cancel</Button>
-            <Button type="submit" loading={save.isPending}>{editing ? 'Save changes' : 'Add member'}</Button>
+            <Button type="button" variant="ghost" onClick={() => setModal(false)} title="Close without saving">Cancel</Button>
+            <Button type="submit" loading={save.isPending} title={editing ? 'Save your changes to this member' : 'Add this person as a team member'}>{editing ? 'Save changes' : 'Add member'}</Button>
           </div>
         </form>
       </Modal>
@@ -388,8 +389,8 @@ const AdminTeam = () => {
         <div className="p-6 space-y-4">
           <p className="text-brand-text-body text-sm">Permanently delete this team member?</p>
           <div className="flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setDeleteId(null)}>Cancel</Button>
-            <Button variant="danger" loading={del.isPending} onClick={() => deleteId && del.mutate(deleteId)}>Delete</Button>
+            <Button variant="ghost" onClick={() => setDeleteId(null)} title="Keep this team member">Cancel</Button>
+            <Button variant="danger" loading={del.isPending} onClick={() => deleteId && del.mutate(deleteId)} title="Confirm permanent deletion">Delete</Button>
           </div>
         </div>
       </Modal>
@@ -414,6 +415,7 @@ const AdminTeam = () => {
                       key={opt.value}
                       type="button"
                       onClick={() => setExpiresIn(opt.value)}
+                      title={`Link expires after ${opt.label}`}
                       className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
                         expiresIn === opt.value
                           ? 'bg-brand-green/10 border-brand-green text-brand-green'
@@ -430,10 +432,11 @@ const AdminTeam = () => {
                 <p className="text-brand-danger text-sm">Failed to generate link. Try again.</p>
               )}
               <div className="flex justify-end gap-3">
-                <Button variant="ghost" onClick={() => setInviteModal(false)}>Cancel</Button>
+                <Button variant="ghost" onClick={() => setInviteModal(false)} title="Close without generating a link">Cancel</Button>
                 <Button
                   loading={createInvite.isPending}
                   onClick={() => createInvite.mutate()}
+                  title="Create the onboarding link"
                 >
                   Generate link
                 </Button>
@@ -449,10 +452,11 @@ const AdminTeam = () => {
                 <Button
                   variant="secondary"
                   onClick={() => { navigator.clipboard.writeText(newLink) }}
+                  title="Copy the link to your clipboard"
                 >
                   Copy link
                 </Button>
-                <Button onClick={() => { setInviteModal(false); setNewLink('') }}>Done</Button>
+                <Button onClick={() => { setInviteModal(false); setNewLink('') }} title="Close this dialog">Done</Button>
               </div>
             </>
           )}

@@ -23,7 +23,7 @@ const LeadsTableSkeleton = () => (
           <SkeletonBox key={i} className={`h-3 ${w}`} />
         ))}
       </div>
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-brand-border">
         {Array.from({ length: 8 }, (_, r) => (
           <div key={r} className="px-5 py-3 grid grid-cols-6 gap-3 items-center">
             <SkeletonBox className="h-4 w-3/4" />
@@ -66,9 +66,9 @@ const AdminLeads = () => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-brand-border">
                 {leads.map(lead => (
-                  <tr key={lead.id} className="hover:bg-brand-bg-alt cursor-pointer" onClick={() => setSelected(lead)}>
+                  <tr key={lead.id} title="View this enquiry's full details" className="hover:bg-brand-bg-alt cursor-pointer" onClick={() => setSelected(lead)}>
                     <td className="px-5 py-3 font-medium text-brand-teal">{lead.name}</td>
                     <td className="px-5 py-3 text-brand-text-body">{lead.email}</td>
                     <td className="px-5 py-3 text-brand-text-muted">{lead.company ?? '—'}</td>

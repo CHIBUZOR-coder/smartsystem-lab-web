@@ -34,7 +34,7 @@ const ProductsTableSkeleton = () => (
           <SkeletonBox key={i} className={`h-3 ${w}`} />
         ))}
       </div>
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-brand-border">
         {Array.from({ length: 7 }, (_, r) => (
           <div key={r} className="px-5 py-4 grid grid-cols-4 gap-4 items-center">
             <div className="space-y-1.5">
@@ -97,7 +97,7 @@ const AdminProducts = () => {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-brand-teal">Products</h1>
-        <Button onClick={openAdd} size="sm">+ Add Product</Button>
+        <Button onClick={openAdd} size="sm" title="Add a new product">+ Add Product</Button>
       </div>
 
       <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden overflow-x-auto">
@@ -112,7 +112,7 @@ const AdminProducts = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-brand-border">
               {products.map(p => (
                 <tr key={p.id} className="hover:bg-brand-bg-alt">
                   <td className="px-5 py-3">
@@ -123,8 +123,8 @@ const AdminProducts = () => {
                   <td className="px-5 py-3"><Badge status={statusMap[p.status]} /></td>
                   <td className="px-5 py-3">
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(p)} className="text-xs text-brand-green hover:underline">Edit</button>
-                      <button onClick={() => setDeleteId(p.id)} className="text-xs text-brand-danger hover:underline">Delete</button>
+                      <button onClick={() => openEdit(p)} title={`Edit ${p.name}`} className="text-xs text-brand-green hover:underline">Edit</button>
+                      <button onClick={() => setDeleteId(p.id)} title={`Permanently delete ${p.name}`} className="text-xs text-brand-danger hover:underline">Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -195,8 +195,8 @@ const AdminProducts = () => {
 
           {save.isError && <p className="text-brand-danger text-sm">Save failed. Please try again.</p>}
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="ghost" onClick={() => setModal(false)}>Cancel</Button>
-            <Button type="submit" loading={save.isPending}>{editing ? 'Save changes' : 'Add product'}</Button>
+            <Button type="button" variant="ghost" onClick={() => setModal(false)} title="Close without saving">Cancel</Button>
+            <Button type="submit" loading={save.isPending} title={editing ? 'Save your changes to this product' : 'Create this product'}>{editing ? 'Save changes' : 'Add product'}</Button>
           </div>
         </form>
       </Modal>
@@ -206,8 +206,8 @@ const AdminProducts = () => {
         <div className="p-6 space-y-4">
           <p className="text-brand-text-body text-sm">This will permanently delete the product. This action cannot be undone.</p>
           <div className="flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setDeleteId(null)}>Cancel</Button>
-            <Button variant="danger" loading={del.isPending} onClick={() => deleteId && del.mutate(deleteId)}>Delete</Button>
+            <Button variant="ghost" onClick={() => setDeleteId(null)} title="Keep this product">Cancel</Button>
+            <Button variant="danger" loading={del.isPending} onClick={() => deleteId && del.mutate(deleteId)} title="Confirm permanent deletion">Delete</Button>
           </div>
         </div>
       </Modal>

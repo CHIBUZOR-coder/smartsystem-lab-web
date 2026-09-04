@@ -71,7 +71,7 @@ const AdminFaq = () => {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-brand-teal">FAQ</h1>
-        <Button onClick={openAdd} size="sm">+ Add Question</Button>
+        <Button onClick={openAdd} size="sm" title="Add a new FAQ item">+ Add Question</Button>
       </div>
 
       <div className="space-y-3">
@@ -85,8 +85,8 @@ const AdminFaq = () => {
                   <p className="text-brand-text-muted text-sm mt-1 line-clamp-2">{item.answer}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={() => openEdit(item)} className="text-xs text-brand-green hover:underline">Edit</button>
-                  <button onClick={() => setDeleteId(item.id)} className="text-xs text-brand-danger hover:underline">Delete</button>
+                  <button onClick={() => openEdit(item)} title="Edit this question" className="text-xs text-brand-green hover:underline">Edit</button>
+                  <button onClick={() => setDeleteId(item.id)} title="Permanently delete this question" className="text-xs text-brand-danger hover:underline">Delete</button>
                 </div>
               </div>
             </div>
@@ -112,8 +112,8 @@ const AdminFaq = () => {
           </div>
           {save.isError && <p className="text-brand-danger text-sm">Save failed.</p>}
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="ghost" onClick={() => setModal(false)}>Cancel</Button>
-            <Button type="submit" loading={save.isPending}>{editing ? 'Save changes' : 'Add question'}</Button>
+            <Button type="button" variant="ghost" onClick={() => setModal(false)} title="Close without saving">Cancel</Button>
+            <Button type="submit" loading={save.isPending} title={editing ? 'Save your changes to this question' : 'Create this FAQ item'}>{editing ? 'Save changes' : 'Add question'}</Button>
           </div>
         </form>
       </Modal>
@@ -122,8 +122,8 @@ const AdminFaq = () => {
         <div className="p-6 space-y-4">
           <p className="text-brand-text-body text-sm">Permanently delete this FAQ item?</p>
           <div className="flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setDeleteId(null)}>Cancel</Button>
-            <Button variant="danger" loading={del.isPending} onClick={() => deleteId && del.mutate(deleteId)}>Delete</Button>
+            <Button variant="ghost" onClick={() => setDeleteId(null)} title="Keep this FAQ item">Cancel</Button>
+            <Button variant="danger" loading={del.isPending} onClick={() => deleteId && del.mutate(deleteId)} title="Confirm permanent deletion">Delete</Button>
           </div>
         </div>
       </Modal>
