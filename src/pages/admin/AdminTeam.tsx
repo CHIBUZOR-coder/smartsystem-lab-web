@@ -217,9 +217,9 @@ const AdminTeam = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {members.map(m => (
+                  {members.map((m, i) => (
                     <tr key={m.id} className="hover:bg-gray-50">
-                      <td className="px-5 py-3 text-gray-400 text-center w-16">{m.order}</td>
+                      <td className="px-5 py-3 text-gray-400 text-center w-16">{i + 1}</td>
                       <td className="px-5 py-3">
                         {m.photoUrl ? (
                           <img src={m.photoUrl} alt={m.name} className="h-9 w-9 rounded-full object-cover" />
