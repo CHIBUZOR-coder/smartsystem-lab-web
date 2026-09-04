@@ -24,6 +24,7 @@ interface ValidateResponse {
 interface FormValues {
   name:     string
   email:    string
+  position: string
   title:    string
   bio:      string
   photoUrl: string
@@ -31,6 +32,39 @@ interface FormValues {
 }
 
 type TokenStatus = 'loading' | 'valid' | 'invalid'
+
+// ─── Positions ────────────────────────────────────────────────────────────────
+// `rank` determines display order on the About page (lower = higher up). Grouped
+// in tiers with gaps so new positions can be inserted without renumbering.
+
+const POSITIONS = [
+  { label: 'Founder & CEO',                    rank: 10 },
+  { label: 'Co-Founder',                       rank: 15 },
+  { label: 'Chief Technology Officer',         rank: 20 },
+  { label: 'Chief Operating Officer',          rank: 20 },
+  { label: 'Chief Product Officer',            rank: 20 },
+  { label: 'Head of Engineering',              rank: 30 },
+  { label: 'Head of Product',                  rank: 30 },
+  { label: 'Head of Design',                   rank: 30 },
+  { label: 'Head of Operations',               rank: 30 },
+  { label: 'Head of Marketing & Sales',        rank: 30 },
+  { label: 'Senior Software Engineer',         rank: 40 },
+  { label: 'Senior IoT Engineer',              rank: 40 },
+  { label: 'Senior Hardware Engineer',         rank: 40 },
+  { label: 'Senior Product Designer',          rank: 40 },
+  { label: 'Software Engineer',                rank: 50 },
+  { label: 'IoT Engineer',                     rank: 50 },
+  { label: 'Hardware Engineer',                rank: 50 },
+  { label: 'UI/UX Designer',                   rank: 50 },
+  { label: 'Product Designer',                 rank: 50 },
+  { label: 'QA Engineer',                      rank: 50 },
+  { label: 'Data Analyst',                     rank: 50 },
+  { label: 'Marketing Associate',              rank: 60 },
+  { label: 'Sales Associate',                  rank: 60 },
+  { label: 'Business Development Associate',   rank: 60 },
+  { label: 'Operations Associate',             rank: 60 },
+  { label: 'Customer Success Associate',       rank: 60 },
+] as const
 
 // ─── Field component ──────────────────────────────────────────────────────────
 
@@ -198,10 +232,17 @@ const Onboarding = () => {
     register, handleSubmit, setValue, watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: { name: '', email: '', title: '', bio: '', photoUrl: '', linkedIn: '' },
+    defaultValues: { name: '', email: '', position: '', title: '', bio: '', photoUrl: '', linkedIn: '' },
   })
 
   const photoUrl = watch('photoUrl')
+  const position = watch('position')
+
+  // Keep `title` (the value actually stored/displayed) in sync with the
+  // dropdown selection — only the "Other" text input sets it directly.
+  useEffect(() => {
+    if (position && position !== 'other') setValue('title', position)
+  }, [position, setValue])
 
   useEffect(() => {
     if (!token) { setStatus('invalid'); setTokenError('No invitation token found. Please use the link you were sent.'); return }
@@ -211,8 +252,10 @@ const Onboarding = () => {
         setIsEdit(res.data.isEdit)
         if (res.data.existing) {
           const e = res.data.existing
+          const matched = POSITIONS.find(p => p.label === e.title)
           setValue('name',     e.name)
           setValue('email',    e.email)
+          setValue('position', matched ? matched.label : 'other')
           setValue('title',    e.title)
           setValue('bio',      e.bio)
           setValue('photoUrl', e.photoUrl)
@@ -230,7 +273,9 @@ const Onboarding = () => {
   const onSubmit = async (data: FormValues) => {
     setSubmitError('')
     try {
-      await api.post('/api/onboarding/submit', { ...data, token })
+      const { position: _position, ...rest } = data
+      const positionRank = POSITIONS.find(p => p.label === data.position)?.rank
+      await api.post('/api/onboarding/submit', { ...rest, token, positionRank })
       setDone(true)
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } } }
@@ -344,18 +389,40 @@ const Onboarding = () => {
                     />
                   </Field>
 
-                  <Field label="Title" id="title" error={errors.title?.message} required>
-                    <input
-                      id="title"
-                      type="text"
-                      placeholder="Senior IoT Engineer"
+                  <Field label="Position" id="position" error={errors.position?.message} required>
+                    <select
+                      id="position"
                       aria-required="true"
-                      aria-invalid={!!errors.title}
-                      aria-describedby={errors.title ? 'title-error' : undefined}
-                      className={inputClass(!!errors.title)}
-                      {...register('title', { required: 'Title is required' })}
-                    />
+                      aria-invalid={!!errors.position}
+                      aria-describedby={errors.position ? 'position-error' : undefined}
+                      className={inputClass(!!errors.position)}
+                      defaultValue=""
+                      {...register('position', { required: 'Please select your position' })}
+                    >
+                      <option value="" disabled>Select your position…</option>
+                      {POSITIONS.map(p => (
+                        <option key={p.label} value={p.label}>{p.label}</option>
+                      ))}
+                      <option value="other">Other (not listed)</option>
+                    </select>
                   </Field>
+
+                  {position === 'other' && (
+                    <Field label="Your position" id="title" error={errors.title?.message} required>
+                      <input
+                        id="title"
+                        type="text"
+                        placeholder="e.g. Field Technician"
+                        aria-required="true"
+                        aria-invalid={!!errors.title}
+                        aria-describedby={errors.title ? 'title-error' : undefined}
+                        className={inputClass(!!errors.title)}
+                        {...register('title', {
+                          validate: v => position !== 'other' || (!!v && v.trim().length > 0) || 'Please describe your position',
+                        })}
+                      />
+                    </Field>
+                  )}
                 </div>
 
                 {/* Bio */}
