@@ -13,6 +13,23 @@ import { POSITIONS } from '../../lib/positions'
 interface TeamMember {
   id: string; name: string; title: string; bio: string
   photoUrl?: string; linkedIn?: string; order: number; isVisible: boolean
+  createdAt: string
+}
+
+// Tenure since createdAt — the "member since" date used to track loyalty over time.
+const formatTenure = (createdAt: string) => {
+  const joined = new Date(createdAt)
+  const now = new Date()
+  let months = (now.getFullYear() - joined.getFullYear()) * 12 + (now.getMonth() - joined.getMonth())
+  if (now.getDate() < joined.getDate()) months -= 1
+  const years = Math.floor(months / 12)
+  const remMonths = months % 12
+  const dateLabel = joined.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  if (months < 1) return `${dateLabel} · new`
+  const parts = []
+  if (years > 0) parts.push(`${years}y`)
+  if (remMonths > 0 || years === 0) parts.push(`${remMonths}mo`)
+  return `${dateLabel} · ${parts.join(' ')}`
 }
 
 // `position` drives the Title field's dropdown but isn't sent to the API —
@@ -59,7 +76,7 @@ const CopyButton = ({ text }: { text: string }) => {
   )
 }
 
-// ─── Loading skeleton: Order | Name | Title | Visible | Actions ───────────────
+// ─── Loading skeleton: Order | Photo | Name | Title | Member Since | Visible | Actions
 
 const TeamTableSkeleton = () => (
   <div className="space-y-8" aria-hidden="true">
@@ -73,17 +90,18 @@ const TeamTableSkeleton = () => (
         </div>
       </div>
       <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden">
-        <div className="bg-brand-bg-alt px-5 py-3 grid grid-cols-6 gap-4 border-b border-brand-border">
-          {['w-10', 'w-9', 'w-1/3', 'w-1/4', 'w-16', 'w-1/4'].map((w, i) => (
+        <div className="bg-brand-bg-alt px-5 py-3 grid grid-cols-7 gap-4 border-b border-brand-border">
+          {['w-10', 'w-9', 'w-1/3', 'w-1/4', 'w-1/4', 'w-16', 'w-1/4'].map((w, i) => (
             <SkeletonBox key={i} className={`h-3 ${w}`} />
           ))}
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-brand-border">
           {Array.from({ length: 5 }, (_, r) => (
-            <div key={r} className="px-5 py-4 grid grid-cols-6 gap-4 items-center">
+            <div key={r} className="px-5 py-4 grid grid-cols-7 gap-4 items-center">
               <SkeletonBox className="h-3 w-6 mx-auto" />
               <SkeletonBox className="h-9 w-9 rounded-full" />
               <SkeletonBox className="h-4 w-3/4" />
+              <SkeletonBox className="h-3 w-2/3" />
               <SkeletonBox className="h-3 w-2/3" />
               <SkeletonBox className="h-5 w-16 rounded-full" />
               <div className="flex gap-2">
@@ -211,12 +229,12 @@ const AdminTeam = () => {
               <table className="w-full text-sm">
                 <thead className="bg-brand-bg-alt">
                   <tr>
-                    {['Order', 'Photo', 'Name', 'Title', 'Visible', 'Actions'].map(h => (
+                    {['Order', 'Photo', 'Name', 'Title', 'Member Since', 'Visible', 'Actions'].map(h => (
                       <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-brand-text-muted uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-brand-border">
                   {members.map((m, i) => (
                     <tr key={m.id} className="hover:bg-brand-bg-alt">
                       <td className="px-5 py-3 text-brand-text-muted text-center w-16">{i + 1}</td>
@@ -231,6 +249,7 @@ const AdminTeam = () => {
                       </td>
                       <td className="px-5 py-3 font-medium text-brand-teal">{m.name}</td>
                       <td className="px-5 py-3 text-brand-text-body">{m.title}</td>
+                      <td className="px-5 py-3 text-brand-text-muted text-xs whitespace-nowrap">{formatTenure(m.createdAt)}</td>
                       <td className="px-5 py-3">
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${m.isVisible ? 'bg-brand-green-subtle text-brand-green' : 'bg-brand-bg-alt text-brand-text-muted'}`}>
                           {m.isVisible ? 'Visible' : 'Hidden'}
