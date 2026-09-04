@@ -17,7 +17,7 @@ const FaqListSkeleton = () => (
     </div>
     <div className="space-y-3">
       {Array.from({ length: 6 }, (_, i) => (
-        <div key={i} className="bg-white rounded-xl border border-gray-200 p-5">
+        <div key={i} className="bg-brand-surface rounded-xl border border-brand-border p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 space-y-2">
               <SkeletonBox className="h-3 w-8" />
@@ -75,14 +75,14 @@ const AdminFaq = () => {
       </div>
 
       <div className="space-y-3">
-        {items.length === 0 ? <p className="text-gray-400 text-sm">No FAQ items yet.</p>
+        {items.length === 0 ? <p className="text-brand-text-muted text-sm">No FAQ items yet.</p>
           : items.map((item, i) => (
-            <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-5">
+            <div key={item.id} className="bg-brand-surface rounded-xl border border-brand-border p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-400 mb-1">#{i + 1}</p>
+                  <p className="text-xs text-brand-text-muted mb-1">#{i + 1}</p>
                   <p className="font-semibold text-brand-teal text-sm">{item.question}</p>
-                  <p className="text-gray-500 text-sm mt-1 line-clamp-2">{item.answer}</p>
+                  <p className="text-brand-text-muted text-sm mt-1 line-clamp-2">{item.answer}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={() => openEdit(item)} className="text-xs text-brand-green hover:underline">Edit</button>
@@ -97,17 +97,17 @@ const AdminFaq = () => {
         <form onSubmit={handleSubmit(d => save.mutate(d))} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Question</label>
-            <input className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+            <input className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               {...register('question', { required: true })} />
           </div>
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Answer</label>
-            <textarea rows={5} className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
+            <textarea rows={5} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
               {...register('answer', { required: true })} />
           </div>
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Order</label>
-            <input type="number" className="w-24 px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+            <input type="number" className="w-24 px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               {...register('order', { valueAsNumber: true })} />
           </div>
           {save.isError && <p className="text-brand-danger text-sm">Save failed.</p>}

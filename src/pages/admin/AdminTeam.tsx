@@ -35,7 +35,7 @@ interface StaffInvite {
 const statusBadge = (status: StaffInvite['status']) => {
   const map = {
     active:  'bg-brand-green-subtle text-brand-green',
-    used:    'bg-gray-100 text-gray-500',
+    used:    'bg-brand-bg-alt text-brand-text-muted',
     expired: 'bg-red-50 text-red-400',
   }
   return <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${map[status]}`}>{status}</span>
@@ -72,8 +72,8 @@ const TeamTableSkeleton = () => (
           <SkeletonBox className="h-8 w-28 rounded-lg" />
         </div>
       </div>
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="bg-gray-50 px-5 py-3 grid grid-cols-6 gap-4 border-b border-gray-100">
+      <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden">
+        <div className="bg-brand-bg-alt px-5 py-3 grid grid-cols-6 gap-4 border-b border-brand-border">
           {['w-10', 'w-9', 'w-1/3', 'w-1/4', 'w-16', 'w-1/4'].map((w, i) => (
             <SkeletonBox key={i} className={`h-3 ${w}`} />
           ))}
@@ -99,7 +99,7 @@ const TeamTableSkeleton = () => (
     {/* Active invites section */}
     <div>
       <SkeletonBox className="h-6 w-48 mb-4" />
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
+      <div className="bg-brand-surface rounded-xl border border-brand-border p-5">
         <SkeletonBox className="h-4 w-80" />
       </div>
     </div>
@@ -205,34 +205,34 @@ const AdminTeam = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
-          {members.length === 0 ? <p className="p-5 text-gray-400 text-sm">No team members yet.</p>
+        <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden overflow-x-auto">
+          {members.length === 0 ? <p className="p-5 text-brand-text-muted text-sm">No team members yet.</p>
             : (
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-brand-bg-alt">
                   <tr>
                     {['Order', 'Photo', 'Name', 'Title', 'Visible', 'Actions'].map(h => (
-                      <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-brand-text-muted uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {members.map((m, i) => (
-                    <tr key={m.id} className="hover:bg-gray-50">
-                      <td className="px-5 py-3 text-gray-400 text-center w-16">{i + 1}</td>
+                    <tr key={m.id} className="hover:bg-brand-bg-alt">
+                      <td className="px-5 py-3 text-brand-text-muted text-center w-16">{i + 1}</td>
                       <td className="px-5 py-3">
                         {m.photoUrl ? (
                           <img src={m.photoUrl} alt={m.name} className="h-9 w-9 rounded-full object-cover" />
                         ) : (
-                          <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-400">
+                          <div className="h-9 w-9 rounded-full bg-brand-bg-alt flex items-center justify-center text-xs font-medium text-brand-text-muted">
                             {m.name.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </td>
                       <td className="px-5 py-3 font-medium text-brand-teal">{m.name}</td>
-                      <td className="px-5 py-3 text-gray-600">{m.title}</td>
+                      <td className="px-5 py-3 text-brand-text-body">{m.title}</td>
                       <td className="px-5 py-3">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${m.isVisible ? 'bg-brand-green-subtle text-brand-green' : 'bg-gray-100 text-gray-400'}`}>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${m.isVisible ? 'bg-brand-green-subtle text-brand-green' : 'bg-brand-bg-alt text-brand-text-muted'}`}>
                           {m.isVisible ? 'Visible' : 'Hidden'}
                         </span>
                       </td>
@@ -258,26 +258,26 @@ const AdminTeam = () => {
         {invitesLoading ? (
           <AdminTableSkeleton cols={['w-1/5', 'w-1/5', 'w-24', 'w-16', 'w-20', 'w-14']} rows={3} />
         ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
+        <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden overflow-x-auto">
           {activeInvites.length === 0
-            ? <p className="p-5 text-gray-400 text-sm">No active invites. Use "Send Onboarding Link" to generate one.</p>
+            ? <p className="p-5 text-brand-text-muted text-sm">No active invites. Use "Send Onboarding Link" to generate one.</p>
             : (
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-brand-bg-alt">
                   <tr>
                     {['For', 'Note', 'Expires', 'Status', 'Link', 'Actions'].map(h => (
-                      <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                      <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-brand-text-muted uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {activeInvites.map(inv => (
-                    <tr key={inv.id} className="hover:bg-gray-50">
-                      <td className="px-5 py-3 text-gray-700 font-medium">
-                        {inv.member?.name ?? <span className="text-gray-400 italic">New member</span>}
+                    <tr key={inv.id} className="hover:bg-brand-bg-alt">
+                      <td className="px-5 py-3 text-brand-text-body font-medium">
+                        {inv.member?.name ?? <span className="text-brand-text-muted italic">New member</span>}
                       </td>
-                      <td className="px-5 py-3 text-gray-500 max-w-[140px] truncate">{inv.note ?? '—'}</td>
-                      <td className="px-5 py-3 text-gray-500 text-xs whitespace-nowrap">
+                      <td className="px-5 py-3 text-brand-text-muted max-w-[140px] truncate">{inv.note ?? '—'}</td>
+                      <td className="px-5 py-3 text-brand-text-muted text-xs whitespace-nowrap">
                         {new Date(inv.expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
                       <td className="px-5 py-3">{statusBadge(inv.status)}</td>
@@ -304,13 +304,13 @@ const AdminTeam = () => {
         <form onSubmit={handleSubmit(d => save.mutate(d))} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Full Name</label>
-            <input className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+            <input className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               {...register('name')} />
           </div>
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Position</label>
             <select
-              className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               defaultValue=""
               {...register('position')}
             >
@@ -324,7 +324,7 @@ const AdminTeam = () => {
           {position === 'other' && (
             <div>
               <label className="block text-sm font-medium text-brand-text-h mb-1">Job Title</label>
-              <input className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              <input className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
                 {...register('title')} />
             </div>
           )}
@@ -334,19 +334,19 @@ const AdminTeam = () => {
           ].map(f => (
             <div key={f.name}>
               <label className="block text-sm font-medium text-brand-text-h mb-1">{f.label}</label>
-              <input className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              <input className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
                 {...register(f.name)} />
             </div>
           ))}
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Bio</label>
-            <textarea rows={4} className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
+            <textarea rows={4} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
               {...register('bio')} />
           </div>
           <div className="flex gap-4">
             <div className="flex-1">
               <label className="block text-sm font-medium text-brand-text-h mb-1">Order</label>
-              <input type="number" className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              <input type="number" className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
                 {...register('order', { valueAsNumber: true })} />
             </div>
             <div className="flex items-end pb-0.5">

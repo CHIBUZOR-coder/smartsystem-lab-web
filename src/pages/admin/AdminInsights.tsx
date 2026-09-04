@@ -19,8 +19,8 @@ const InsightsTableSkeleton = () => (
       <SkeletonBox className="h-7 w-24" />
       <SkeletonBox className="h-8 w-28 rounded-lg" />
     </div>
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="bg-gray-50 px-5 py-3 grid grid-cols-4 gap-4 border-b border-gray-100">
+    <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden">
+      <div className="bg-brand-bg-alt px-5 py-3 grid grid-cols-4 gap-4 border-b border-brand-border">
         {['w-2/5', 'w-1/4', 'w-1/5', 'w-1/5'].map((w, i) => (
           <SkeletonBox key={i} className={`h-3 ${w}`} />
         ))}
@@ -87,25 +87,25 @@ const AdminInsights = () => {
         <Button onClick={openAdd} size="sm">+ Add Article</Button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
-        {insights.length === 0 ? <p className="p-5 text-gray-400 text-sm">No articles yet.</p>
+      <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden overflow-x-auto">
+        {insights.length === 0 ? <p className="p-5 text-brand-text-muted text-sm">No articles yet.</p>
           : (
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-brand-bg-alt">
                 <tr>
                   {['Title', 'Category', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-brand-text-muted uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {insights.map(ins => (
-                  <tr key={ins.id} className="hover:bg-gray-50">
+                  <tr key={ins.id} className="hover:bg-brand-bg-alt">
                     <td className="px-5 py-3">
                       <p className="font-medium text-brand-teal">{ins.title}</p>
-                      <p className="text-gray-400 text-xs truncate max-w-xs">{ins.excerpt}</p>
+                      <p className="text-brand-text-muted text-xs truncate max-w-xs">{ins.excerpt}</p>
                     </td>
-                    <td className="px-5 py-3 text-gray-600">{ins.category}</td>
+                    <td className="px-5 py-3 text-brand-text-body">{ins.category}</td>
                     <td className="px-5 py-3">
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${ins.publishedAt ? 'bg-brand-green-subtle text-brand-green' : 'bg-amber-50 text-amber-600'}`}>
                         {ins.publishedAt ? 'Published' : 'Draft'}
@@ -134,23 +134,23 @@ const AdminInsights = () => {
           ].map(f => (
             <div key={f.name}>
               <label className="block text-sm font-medium text-brand-text-h mb-1">{f.label}</label>
-              <input className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              <input className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
                 {...register(f.name)} />
             </div>
           ))}
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Excerpt</label>
-            <textarea rows={2} className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
+            <textarea rows={2} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
               {...register('excerpt')} />
           </div>
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Content</label>
-            <textarea rows={8} className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none font-mono"
+            <textarea rows={8} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none font-mono"
               {...register('content')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-brand-text-h mb-1">Publish Date <span className="text-gray-400 font-normal">(leave empty to save as draft)</span></label>
-            <input type="datetime-local" className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+            <label className="block text-sm font-medium text-brand-text-h mb-1">Publish Date <span className="text-brand-text-muted font-normal">(leave empty to save as draft)</span></label>
+            <input type="datetime-local" className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               {...register('publishedAt')} />
           </div>
           {save.isError && <p className="text-brand-danger text-sm">Save failed.</p>}

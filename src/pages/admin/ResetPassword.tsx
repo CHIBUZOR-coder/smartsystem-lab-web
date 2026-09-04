@@ -36,8 +36,8 @@ const ResetPassword = () => {
   if (!token) {
     return (
       <div className="force-light min-h-screen bg-brand-teal flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-6 shadow-xl text-center space-y-3 max-w-sm w-full">
-          <p className="text-[#062020] font-semibold">Invalid reset link</p>
+        <div className="bg-brand-surface rounded-2xl p-6 shadow-xl text-center space-y-3 max-w-sm w-full">
+          <p className="text-brand-text-h font-semibold">Invalid reset link</p>
           <Link to={`${ADMIN_BASE}/forgot-password`} className="text-xs text-brand-green hover:underline block">
             Request a new one
           </Link>
@@ -57,7 +57,7 @@ const ResetPassword = () => {
           <p className="text-white/50 text-sm mt-1">Admin Portal</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-xl">
+        <div className="bg-brand-surface rounded-2xl p-6 shadow-xl">
           {done ? (
             <div className="text-center space-y-3 py-2">
               <div className="w-12 h-12 rounded-full bg-brand-green/10 flex items-center justify-center mx-auto">
@@ -65,20 +65,20 @@ const ResetPassword = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-[#062020] font-semibold">Password reset!</p>
-              <p className="text-gray-400 text-xs">Redirecting to sign in…</p>
+              <p className="text-brand-text-h font-semibold">Password reset!</p>
+              <p className="text-brand-text-muted text-xs">Redirecting to sign in…</p>
             </div>
           ) : (
             <>
-              <h2 className="text-[#062020] font-bold text-lg mb-5">Set new password</h2>
+              <h2 className="text-brand-text-h font-bold text-lg mb-5">Set new password</h2>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#214040] mb-1.5">New password</label>
+                  <label className="block text-sm font-medium text-brand-text-body mb-1.5">New password</label>
                   <div className="relative">
                     <input
                       type={showPass ? 'text' : 'password'}
                       autoComplete="new-password"
-                      className="w-full px-3 py-2.5 pr-10 rounded-lg border border-gray-200 text-[#062020] text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                      className="w-full px-3 py-2.5 pr-10 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                       {...register('newPassword', {
                         required: 'Password is required',
                         minLength: { value: 8, message: 'At least 8 characters' },
@@ -87,7 +87,7 @@ const ResetPassword = () => {
                     <button
                       type="button"
                       onClick={() => setShowPass(v => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#062020] transition-colors focus-visible:outline-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-text-muted hover:text-brand-text-h transition-colors focus-visible:outline-none"
                       aria-label={showPass ? 'Hide password' : 'Show password'}
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -102,11 +102,11 @@ const ResetPassword = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#214040] mb-1.5">Confirm password</label>
+                  <label className="block text-sm font-medium text-brand-text-body mb-1.5">Confirm password</label>
                   <input
                     type={showPass ? 'text' : 'password'}
                     autoComplete="new-password"
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-[#062020] text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                    className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                     {...register('confirmPassword', {
                       required: 'Please confirm your password',
                       validate: v => v === watch('newPassword') || 'Passwords do not match',
@@ -126,7 +126,7 @@ const ResetPassword = () => {
                 </Button>
 
                 <div className="text-center pt-1">
-                  <Link to={`${ADMIN_BASE}/login`} className="text-xs text-gray-400 hover:text-brand-teal transition-colors">
+                  <Link to={`${ADMIN_BASE}/login`} className="text-xs text-brand-text-muted hover:text-brand-teal transition-colors">
                     Back to sign in
                   </Link>
                 </div>

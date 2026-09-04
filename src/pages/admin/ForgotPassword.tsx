@@ -39,7 +39,7 @@ const ForgotPassword = () => {
           <p className="text-white/50 text-sm mt-1">Admin Portal</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-xl">
+        <div className="bg-brand-surface rounded-2xl p-6 shadow-xl">
           {resetUrl ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -48,16 +48,16 @@ const ForgotPassword = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="text-[#062020] font-semibold text-sm">Reset link generated</p>
+                <p className="text-brand-text-h font-semibold text-sm">Reset link generated</p>
               </div>
 
               {resetUrl !== 'sent' && (
                 <div>
-                  <p className="text-gray-500 text-xs mb-2">Copy and share this link with the account holder:</p>
-                  <div className="bg-gray-50 rounded-lg p-3 text-xs text-[#062020] break-all border border-gray-200 font-mono">
+                  <p className="text-brand-text-muted text-xs mb-2">Copy and share this link with the account holder:</p>
+                  <div className="bg-brand-bg-alt rounded-lg p-3 text-xs text-brand-text-h break-all border border-brand-border font-mono">
                     {resetUrl}
                   </div>
-                  <p className="text-gray-400 text-xs mt-2">Expires in 1 hour. Single use only.</p>
+                  <p className="text-brand-text-muted text-xs mt-2">Expires in 1 hour. Single use only.</p>
                 </div>
               )}
 
@@ -67,16 +67,16 @@ const ForgotPassword = () => {
             </div>
           ) : (
             <>
-              <h2 className="text-[#062020] font-bold text-lg mb-1">Reset password</h2>
-              <p className="text-gray-400 text-xs mb-5">Enter the admin email to generate a reset link.</p>
+              <h2 className="text-brand-text-h font-bold text-lg mb-1">Reset password</h2>
+              <p className="text-brand-text-muted text-xs mb-5">Enter the admin email to generate a reset link.</p>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#214040] mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-brand-text-body mb-1.5">Email</label>
                   <input
                     type="email"
                     autoComplete="email"
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-[#062020] text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                    className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                     {...register('email', { required: 'Email is required' })}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -93,7 +93,7 @@ const ForgotPassword = () => {
                 </Button>
 
                 <div className="text-center pt-1">
-                  <Link to={`${ADMIN_BASE}/login`} className="text-xs text-gray-400 hover:text-brand-teal transition-colors">
+                  <Link to={`${ADMIN_BASE}/login`} className="text-xs text-brand-text-muted hover:text-brand-teal transition-colors">
                     Back to sign in
                   </Link>
                 </div>

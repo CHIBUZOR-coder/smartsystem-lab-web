@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAuthStore } from '../../store/authStore'
+import { useThemeStore } from '../../store/themeStore'
 import api from '../../lib/api'
 import { ADMIN_BASE } from '../../lib/adminPath'
+import ThemeToggle from '../ui/ThemeToggle'
 
 const navItems = [
   { label: 'Dashboard',  to: ADMIN_BASE,                  icon: '▦' },
@@ -16,17 +18,18 @@ const navItems = [
 
 // ─── Sidebar content (shared between desktop and mobile drawer) ───────────────
 
-const SidebarContent = ({ onNav, onLogout, admin }: {
+const SidebarContent = ({ onNav, onLogout, admin, isDark }: {
   onNav?: () => void
   onLogout: () => void
   admin: { name?: string; email?: string } | null
+  isDark: boolean
 }) => (
   <>
     {/* Logo */}
     <div className="px-5 py-5 border-b border-white/10 shrink-0">
       <div className="flex items-center gap-2.5">
         <div className="h-7 w-7 rounded bg-brand-green flex items-center justify-center shrink-0">
-          <span className="text-[#062020] font-black text-xs">AZ</span>
+          <span className="text-brand-text-h font-black text-xs">AZ</span>
         </div>
         <div>
           <p className="text-white font-bold text-sm leading-none">AZ SMARTSYSTEM</p>
@@ -46,8 +49,8 @@ const SidebarContent = ({ onNav, onLogout, admin }: {
           className={({ isActive }) =>
             `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
               isActive
-                ? 'bg-brand-green text-[#062020]'
-                : 'text-white/70 hover:bg-white/10 hover:text-white'
+                ? 'bg-brand-green text-brand-text-h'
+                : 'text-white/70 hover:bg-brand-surface/10 hover:text-white'
             }`
           }
         >
@@ -74,12 +77,15 @@ const SidebarContent = ({ onNav, onLogout, admin }: {
           </svg>
           View site
         </Link>
-        <button
-          onClick={onLogout}
-          className="text-xs text-white/50 hover:text-brand-green transition-colors"
-        >
-          Sign out →
-        </button>
+        <div className="flex items-center gap-1">
+          <ThemeToggle isDark={isDark} className="!p-1 text-white/50 hover:text-white hover:bg-white/10" />
+          <button
+            onClick={onLogout}
+            className="text-xs text-white/50 hover:text-brand-green transition-colors"
+          >
+            Sign out →
+          </button>
+        </div>
       </div>
     </div>
   </>
@@ -89,6 +95,8 @@ const SidebarContent = ({ onNav, onLogout, admin }: {
 
 const AdminLayout = () => {
   const { admin, clearAuth } = useAuthStore()
+  const { resolvedTheme } = useThemeStore()
+  const isDark = resolvedTheme() === 'dark'
   const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -99,11 +107,11 @@ const AdminLayout = () => {
   }
 
   return (
-    <div className="force-light flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-brand-bg-alt overflow-hidden">
 
       {/* ── Desktop sidebar (lg+) ─────────────────────────────────────── */}
       <aside className="hidden lg:flex w-60 bg-[#062020] flex-col shrink-0">
-        <SidebarContent admin={admin} onLogout={handleLogout} />
+        <SidebarContent admin={admin} onLogout={handleLogout} isDark={isDark} />
       </aside>
 
       {/* ── Mobile drawer ─────────────────────────────────────────────── */}
@@ -144,6 +152,7 @@ const AdminLayout = () => {
                 admin={admin}
                 onNav={() => setDrawerOpen(false)}
                 onLogout={handleLogout}
+                isDark={isDark}
               />
             </motion.aside>
           </>
@@ -154,11 +163,11 @@ const AdminLayout = () => {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Mobile top bar */}
-        <header className="lg:hidden flex items-center gap-3 px-4 h-14 bg-white border-b border-gray-200 shrink-0">
+        <header className="lg:hidden flex items-center gap-3 px-4 h-14 bg-brand-surface border-b border-brand-border shrink-0">
           <button
             onClick={() => setDrawerOpen(true)}
             aria-label="Open menu"
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg text-brand-text-muted hover:text-brand-text-h hover:bg-brand-bg-alt transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -166,12 +175,13 @@ const AdminLayout = () => {
           </button>
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded bg-brand-green flex items-center justify-center shrink-0">
-              <span className="text-[#062020] font-black text-[10px]">AZ</span>
+              <span className="text-brand-text-h font-black text-[10px]">AZ</span>
             </div>
-            <span className="font-bold text-sm text-[#062020]">
+            <span className="font-bold text-sm text-brand-text-h">
               AZ SMARTSYSTEM <span className="text-brand-green">ADMIN</span>
             </span>
           </div>
+          <ThemeToggle isDark={isDark} className="ml-auto text-brand-text-muted hover:text-brand-text-h hover:bg-brand-bg-alt" />
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">

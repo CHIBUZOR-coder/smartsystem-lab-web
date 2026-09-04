@@ -56,34 +56,34 @@ const AdminLogin = () => {
           <p className="text-white/50 text-sm mt-1">Admin Portal</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-xl">
-          <h2 className="text-[#062020] font-bold text-lg mb-5">Sign in</h2>
+        <div className="bg-brand-surface rounded-2xl p-6 shadow-xl">
+          <h2 className="text-brand-text-h font-bold text-lg mb-5">Sign in</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#214040] mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-brand-text-body mb-1.5">Email</label>
               <input
                 type="email"
                 autoComplete="email"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-[#062020] text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                 {...register('email', { required: 'Email is required' })}
               />
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#214040] mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-brand-text-body mb-1.5">Password</label>
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}
                   autoComplete="current-password"
-                  className="w-full px-3 py-2.5 pr-10 rounded-lg border border-gray-200 text-[#062020] text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
+                  className="w-full px-3 py-2.5 pr-10 rounded-lg border border-brand-border text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green transition"
                   {...register('password', { required: 'Password is required' })}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#062020] transition-colors focus-visible:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-text-muted hover:text-brand-text-h transition-colors focus-visible:outline-none"
                   aria-label={showPass ? 'Hide password' : 'Show password'}
                 >
                   <EyeIcon open={showPass} />
@@ -105,7 +105,7 @@ const AdminLogin = () => {
             <div className="text-center pt-1">
               <Link
                 to={`${ADMIN_BASE}/forgot-password`}
-                className="text-xs text-gray-400 hover:text-brand-teal transition-colors"
+                className="text-xs text-brand-text-muted hover:text-brand-teal transition-colors"
               >
                 Forgot password?
               </Link>

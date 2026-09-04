@@ -11,15 +11,15 @@ const DashboardPageSkeleton = () => (
     {/* 5 stat cards */}
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
       {Array.from({ length: 5 }, (_, i) => (
-        <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 space-y-2">
+        <div key={i} className="bg-brand-surface rounded-xl border border-brand-border p-4 sm:p-5 space-y-2">
           <SkeletonBox className="h-3 w-20" />
           <SkeletonBox className="h-8 w-10" />
         </div>
       ))}
     </div>
     {/* Recent leads table: Name, Email, Company, Reason, Date */}
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-100">
+    <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden">
+      <div className="px-5 py-4 border-b border-brand-border">
         <SkeletonBox className="h-5 w-32" />
       </div>
       <div className="divide-y divide-gray-100">
@@ -38,8 +38,8 @@ const DashboardPageSkeleton = () => (
 )
 
 const StatCard = ({ label, value, color }: { label: string; value: number; color: string }) => (
-  <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-    <p className="text-xs sm:text-sm text-gray-500 mb-1">{label}</p>
+  <div className="bg-brand-surface rounded-xl border border-brand-border p-4 sm:p-5">
+    <p className="text-xs sm:text-sm text-brand-text-muted mb-1">{label}</p>
     <p className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</p>
   </div>
 )
@@ -74,31 +74,31 @@ const AdminDashboard = () => {
         <StatCard label="Leads"     value={stats?.leads ?? 0}     color="text-brand-green" />
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
-        <div className="px-5 py-4 border-b border-gray-100">
+      <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden overflow-x-auto">
+        <div className="px-5 py-4 border-b border-brand-border">
           <h2 className="font-semibold text-brand-teal">Recent Leads</h2>
         </div>
         {recentLeads.length === 0 ? (
-          <p className="text-gray-400 text-sm p-5">No leads yet.</p>
+          <p className="text-brand-text-muted text-sm p-5">No leads yet.</p>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-brand-bg-alt">
               <tr>
                 {['Name', 'Email', 'Company', 'Reason', 'Date'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                  <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-brand-text-muted uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {recentLeads.map(lead => (
-                <tr key={lead.id} className="hover:bg-gray-50">
+                <tr key={lead.id} className="hover:bg-brand-bg-alt">
                   <td className="px-5 py-3 font-medium text-brand-teal">{lead.name}</td>
-                  <td className="px-5 py-3 text-gray-600">{lead.email}</td>
-                  <td className="px-5 py-3 text-gray-500">{lead.company ?? '—'}</td>
+                  <td className="px-5 py-3 text-brand-text-body">{lead.email}</td>
+                  <td className="px-5 py-3 text-brand-text-muted">{lead.company ?? '—'}</td>
                   <td className="px-5 py-3">
                     <span className="capitalize text-xs bg-brand-green-subtle text-brand-green px-2 py-0.5 rounded-full font-medium">{lead.reason}</span>
                   </td>
-                  <td className="px-5 py-3 text-gray-400 text-xs">{new Date(lead.createdAt).toLocaleDateString()}</td>
+                  <td className="px-5 py-3 text-brand-text-muted text-xs">{new Date(lead.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

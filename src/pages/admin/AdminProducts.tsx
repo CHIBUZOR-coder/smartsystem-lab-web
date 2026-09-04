@@ -28,8 +28,8 @@ const ProductsTableSkeleton = () => (
       <SkeletonBox className="h-7 w-24" />
       <SkeletonBox className="h-8 w-28 rounded-lg" />
     </div>
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="bg-gray-50 px-5 py-3 grid grid-cols-4 gap-4 border-b border-gray-100">
+    <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden">
+      <div className="bg-brand-bg-alt px-5 py-3 grid grid-cols-4 gap-4 border-b border-brand-border">
         {['w-2/5', 'w-1/4', 'w-1/5', 'w-1/5'].map((w, i) => (
           <SkeletonBox key={i} className={`h-3 ${w}`} />
         ))}
@@ -100,26 +100,26 @@ const AdminProducts = () => {
         <Button onClick={openAdd} size="sm">+ Add Product</Button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
+      <div className="bg-brand-surface rounded-xl border border-brand-border overflow-hidden overflow-x-auto">
         {products.length === 0 ? (
-          <p className="p-5 text-gray-400 text-sm">No products yet.</p>
+          <p className="p-5 text-brand-text-muted text-sm">No products yet.</p>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-brand-bg-alt">
               <tr>
                 {['Name', 'Category', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                  <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-brand-text-muted uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {products.map(p => (
-                <tr key={p.id} className="hover:bg-gray-50">
+                <tr key={p.id} className="hover:bg-brand-bg-alt">
                   <td className="px-5 py-3">
                     <p className="font-medium text-brand-teal">{p.name}</p>
-                    <p className="text-gray-400 text-xs truncate max-w-xs">{p.tagline}</p>
+                    <p className="text-brand-text-muted text-xs truncate max-w-xs">{p.tagline}</p>
                   </td>
-                  <td className="px-5 py-3 text-gray-600">{p.category}</td>
+                  <td className="px-5 py-3 text-brand-text-body">{p.category}</td>
                   <td className="px-5 py-3"><Badge status={statusMap[p.status]} /></td>
                   <td className="px-5 py-3">
                     <div className="flex gap-2">
@@ -146,7 +146,7 @@ const AdminProducts = () => {
             <div key={f.name}>
               <label className="block text-sm font-medium text-brand-text-h mb-1">{f.label}</label>
               <input
-                className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+                className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
                 {...register(f.name, f.req ? { required: `${f.label} is required` } : {})}
               />
               {errors[f.name] && <p className="text-brand-danger text-xs mt-1">{errors[f.name]?.message}</p>}
@@ -155,7 +155,7 @@ const AdminProducts = () => {
 
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Description</label>
-            <textarea rows={3} className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
+            <textarea rows={3} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
               {...register('description', { required: 'Description is required' })} />
           </div>
 
@@ -173,7 +173,7 @@ const AdminProducts = () => {
 
           <div>
             <label className="block text-sm font-medium text-brand-text-h mb-1">Status</label>
-            <select className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+            <select className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
               {...register('status', { required: true })}>
               <option value="AVAILABLE">Available</option>
               <option value="PILOT">Pilot</option>
@@ -182,14 +182,14 @@ const AdminProducts = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-text-h mb-1">Features <span className="text-gray-400 font-normal">(one per line)</span></label>
-            <textarea rows={4} className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
+            <label className="block text-sm font-medium text-brand-text-h mb-1">Features <span className="text-brand-text-muted font-normal">(one per line)</span></label>
+            <textarea rows={4} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
               {...register('featuresRaw')} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-text-h mb-1">Target Users <span className="text-gray-400 font-normal">(one per line)</span></label>
-            <textarea rows={3} className="w-full px-3 py-2 rounded-lg border border-brand-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
+            <label className="block text-sm font-medium text-brand-text-h mb-1">Target Users <span className="text-brand-text-muted font-normal">(one per line)</span></label>
+            <textarea rows={3} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
               {...register('targetUsersRaw')} />
           </div>
 
