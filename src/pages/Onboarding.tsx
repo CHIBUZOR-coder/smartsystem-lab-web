@@ -360,18 +360,16 @@ const Onboarding = () => {
 
                 {/* Bio */}
                 <div className="rounded-2xl border border-brand-border bg-brand-surface p-5">
-                  <Field label="Short bio" id="bio" error={errors.bio?.message} required>
+                  <Field label="Short bio" id="bio" error={errors.bio?.message}>
                     <textarea
                       id="bio"
                       rows={4}
                       placeholder="A couple of sentences about your background, what you do at AZ SmartSystem Lab, and what you're passionate about…"
-                      aria-required="true"
                       aria-invalid={!!errors.bio}
                       aria-describedby={errors.bio ? 'bio-error' : undefined}
                       className={`${inputClass(!!errors.bio)} resize-none`}
                       {...register('bio', {
-                        required: 'Bio is required',
-                        minLength: { value: 10, message: 'Bio must be at least 10 characters' },
+                        validate: v => !v || v.length >= 10 || 'Bio must be at least 10 characters',
                       })}
                     />
                   </Field>
