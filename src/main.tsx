@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HelmetProvider } from 'react-helmet-async'
 import { initTheme } from './store/themeStore'
 import GlobalLoader from './components/ui/GlobalLoader'
+import ErrorBoundary from './components/ErrorBoundary'
 import router from './router'
 import './index.css'
 
@@ -22,11 +23,13 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <GlobalLoader />
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </HelmetProvider>
+    <ErrorBoundary>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <GlobalLoader />
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )

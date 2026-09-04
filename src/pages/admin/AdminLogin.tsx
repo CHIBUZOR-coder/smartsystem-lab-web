@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useAuthStore } from '../../store/authStore'
 import api from '../../lib/api'
+import { ADMIN_BASE } from '../../lib/adminPath'
 import Button from '../../components/ui/Button'
 
 interface LoginForm { email: string; password: string }
@@ -26,7 +27,7 @@ const AdminLogin = () => {
   const { setAuth }             = useAuthStore()
   const navigate                = useNavigate()
   const location                = useLocation()
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/admin'
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? ADMIN_BASE
 
   const onSubmit = async (data: LoginForm) => {
     setLoading(true)
@@ -103,7 +104,7 @@ const AdminLogin = () => {
 
             <div className="text-center pt-1">
               <Link
-                to="/admin/forgot-password"
+                to={`${ADMIN_BASE}/forgot-password`}
                 className="text-xs text-gray-400 hover:text-brand-teal transition-colors"
               >
                 Forgot password?

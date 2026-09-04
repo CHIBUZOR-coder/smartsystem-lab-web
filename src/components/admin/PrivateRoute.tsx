@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
 import api from '../../lib/api'
+import { ADMIN_BASE } from '../../lib/adminPath'
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const { admin, hydrated, setAuth, clearAuth } = useAuthStore()
@@ -24,7 +25,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
   }
 
   if (!admin) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />
+    return <Navigate to={`${ADMIN_BASE}/login`} state={{ from: location }} replace />
   }
 
   return <>{children}</>

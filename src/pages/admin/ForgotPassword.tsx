@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import api from '../../lib/api'
+import { ADMIN_BASE } from '../../lib/adminPath'
 import Button from '../../components/ui/Button'
 
 interface ForgotForm { email: string }
@@ -60,7 +61,7 @@ const ForgotPassword = () => {
                 </div>
               )}
 
-              <Link to="/admin/login" className="block text-center text-xs text-brand-green hover:underline pt-1">
+              <Link to={`${ADMIN_BASE}/login`} className="block text-center text-xs text-brand-green hover:underline pt-1">
                 Back to sign in
               </Link>
             </div>
@@ -92,7 +93,7 @@ const ForgotPassword = () => {
                 </Button>
 
                 <div className="text-center pt-1">
-                  <Link to="/admin/login" className="text-xs text-gray-400 hover:text-brand-teal transition-colors">
+                  <Link to={`${ADMIN_BASE}/login`} className="text-xs text-gray-400 hover:text-brand-teal transition-colors">
                     Back to sign in
                   </Link>
                 </div>

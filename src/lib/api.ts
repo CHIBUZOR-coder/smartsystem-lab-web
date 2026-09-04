@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useLoaderStore } from '../store/loaderStore'
+import { ADMIN_BASE } from './adminPath'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:4000',
@@ -25,9 +26,9 @@ api.interceptors.response.use(
   err => {
     if (isMutation(err.config?.method)) useLoaderStore.getState().hide()
     if (err.response?.status === 401) {
-      if (window.location.pathname.startsWith('/admin') &&
-          window.location.pathname !== '/admin/login') {
-        window.location.href = '/admin/login'
+      if (window.location.pathname.startsWith(ADMIN_BASE) &&
+          window.location.pathname !== `${ADMIN_BASE}/login`) {
+        window.location.href = `${ADMIN_BASE}/login`
       }
     }
     return Promise.reject(err)

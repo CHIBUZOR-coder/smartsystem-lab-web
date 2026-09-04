@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import api from '../../lib/api'
+import { ADMIN_BASE } from '../../lib/adminPath'
 import Button from '../../components/ui/Button'
 
 interface ResetForm { newPassword: string; confirmPassword: string }
@@ -23,7 +24,7 @@ const ResetPassword = () => {
     try {
       await api.post('/api/auth/reset-password', { token, newPassword: data.newPassword })
       setDone(true)
-      setTimeout(() => navigate('/admin/login', { replace: true }), 2500)
+      setTimeout(() => navigate(`${ADMIN_BASE}/login`, { replace: true }), 2500)
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
       setError(msg ?? 'Reset failed. The link may have expired.')
@@ -37,7 +38,7 @@ const ResetPassword = () => {
       <div className="force-light min-h-screen bg-brand-teal flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl p-6 shadow-xl text-center space-y-3 max-w-sm w-full">
           <p className="text-[#062020] font-semibold">Invalid reset link</p>
-          <Link to="/admin/forgot-password" className="text-xs text-brand-green hover:underline block">
+          <Link to={`${ADMIN_BASE}/forgot-password`} className="text-xs text-brand-green hover:underline block">
             Request a new one
           </Link>
         </div>
@@ -125,7 +126,7 @@ const ResetPassword = () => {
                 </Button>
 
                 <div className="text-center pt-1">
-                  <Link to="/admin/login" className="text-xs text-gray-400 hover:text-brand-teal transition-colors">
+                  <Link to={`${ADMIN_BASE}/login`} className="text-xs text-gray-400 hover:text-brand-teal transition-colors">
                     Back to sign in
                   </Link>
                 </div>

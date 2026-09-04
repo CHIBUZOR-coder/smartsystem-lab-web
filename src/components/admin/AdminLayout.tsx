@@ -3,14 +3,15 @@ import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAuthStore } from '../../store/authStore'
 import api from '../../lib/api'
+import { ADMIN_BASE } from '../../lib/adminPath'
 
 const navItems = [
-  { label: 'Dashboard',  to: '/admin',          icon: '▦' },
-  { label: 'Products',   to: '/admin/products', icon: '◈' },
-  { label: 'Team',       to: '/admin/team',     icon: '◉' },
-  { label: 'Insights',   to: '/admin/insights', icon: '◎' },
-  { label: 'FAQ',        to: '/admin/faq',      icon: '◌' },
-  { label: 'Leads',      to: '/admin/leads',    icon: '◍' },
+  { label: 'Dashboard',  to: ADMIN_BASE,                  icon: '▦' },
+  { label: 'Products',   to: `${ADMIN_BASE}/products`,    icon: '◈' },
+  { label: 'Team',       to: `${ADMIN_BASE}/team`,        icon: '◉' },
+  { label: 'Insights',   to: `${ADMIN_BASE}/insights`,    icon: '◎' },
+  { label: 'FAQ',        to: `${ADMIN_BASE}/faq`,         icon: '◌' },
+  { label: 'Leads',      to: `${ADMIN_BASE}/leads`,       icon: '◍' },
 ]
 
 // ─── Sidebar content (shared between desktop and mobile drawer) ───────────────
@@ -40,7 +41,7 @@ const SidebarContent = ({ onNav, onLogout, admin }: {
         <NavLink
           key={item.to}
           to={item.to}
-          end={item.to === '/admin'}
+          end={item.to === ADMIN_BASE}
           onClick={onNav}
           className={({ isActive }) =>
             `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
@@ -94,7 +95,7 @@ const AdminLayout = () => {
   const handleLogout = async () => {
     try { await api.post('/api/auth/logout') } catch { /* ignore */ }
     clearAuth()
-    navigate('/admin/login')
+    navigate(`${ADMIN_BASE}/login`)
   }
 
   return (

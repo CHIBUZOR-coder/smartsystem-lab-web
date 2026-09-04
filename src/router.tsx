@@ -2,6 +2,8 @@ import { createBrowserRouter } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import PageSkeleton from './components/ui/PageSkeleton'
 import AdminPageSkeleton from './components/ui/AdminPageSkeleton'
+import { ADMIN_BASE } from './lib/adminPath'
+import RouteErrorBoundary from './components/RouteErrorBoundary'
 
 // Public layout + pages (lazy loaded)
 import App from './App'
@@ -41,6 +43,7 @@ const router = createBrowserRouter([
   {
     element: <App />,
     path: '/',
+    errorElement: <RouteErrorBoundary />,
     children: [
       { element: wrap(<Home />),          index: true },
       { element: wrap(<About />),         path: 'about' },
@@ -62,21 +65,23 @@ const router = createBrowserRouter([
   {
     path: '/onboarding',
     element: wrap(<Onboarding />),
+    errorElement: <RouteErrorBoundary />,
   },
 
   // ── Admin — auth pages (no layout wrapper) ────────────────────────────────
-  { path: '/admin/login',           element: wrap(<AdminLogin />) },
-  { path: '/admin/forgot-password', element: wrap(<ForgotPassword />) },
-  { path: '/admin/reset-password',  element: wrap(<ResetPassword />) },
+  { path: `${ADMIN_BASE}/login`,           element: wrap(<AdminLogin />),      errorElement: <RouteErrorBoundary /> },
+  { path: `${ADMIN_BASE}/forgot-password`, element: wrap(<ForgotPassword />),  errorElement: <RouteErrorBoundary /> },
+  { path: `${ADMIN_BASE}/reset-password`,  element: wrap(<ResetPassword />),   errorElement: <RouteErrorBoundary /> },
 
   // ── Admin — protected routes inside AdminLayout ────────────────────────────
   {
-    path: '/admin',
+    path: ADMIN_BASE,
     element: (
       <PrivateRoute>
         <AdminLayout />
       </PrivateRoute>
     ),
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true,      element: wrapAdmin(<AdminDashboard />) },
       { path: 'products', element: wrapAdmin(<AdminProducts />) },
