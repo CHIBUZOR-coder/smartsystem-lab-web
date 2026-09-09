@@ -16,9 +16,7 @@ interface ValidateResponse {
     name:     string
     email:    string
     title:    string
-    bio:      string
     photoUrl: string
-    linkedIn: string
   } | null
 }
 
@@ -27,9 +25,7 @@ interface FormValues {
   email:    string
   position: string
   title:    string
-  bio:      string
   photoUrl: string
-  linkedIn: string
 }
 
 type TokenStatus = 'loading' | 'valid' | 'invalid'
@@ -200,7 +196,7 @@ const Onboarding = () => {
     register, handleSubmit, setValue, watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: { name: '', email: '', position: '', title: '', bio: '', photoUrl: '', linkedIn: '' },
+    defaultValues: { name: '', email: '', position: '', title: '', photoUrl: '' },
   })
 
   const photoUrl = watch('photoUrl')
@@ -225,9 +221,7 @@ const Onboarding = () => {
           setValue('email',    e.email)
           setValue('position', matched ? matched.label : 'other')
           setValue('title',    e.title)
-          setValue('bio',      e.bio)
           setValue('photoUrl', e.photoUrl)
-          setValue('linkedIn', e.linkedIn)
         }
         setStatus('valid')
       })
@@ -391,45 +385,6 @@ const Onboarding = () => {
                       />
                     </Field>
                   )}
-                </div>
-
-                {/* Bio */}
-                <div className="rounded-2xl border border-brand-border bg-brand-surface p-5">
-                  <Field label="Short bio" id="bio" error={errors.bio?.message}>
-                    <textarea
-                      id="bio"
-                      rows={4}
-                      placeholder="A couple of sentences about your background, what you do at AZ SmartSystem Lab, and what you're passionate about…"
-                      aria-invalid={!!errors.bio}
-                      aria-describedby={errors.bio ? 'bio-error' : undefined}
-                      className={`${inputClass(!!errors.bio)} resize-none`}
-                      {...register('bio', {
-                        validate: v => !v || v.length >= 10 || 'Bio must be at least 10 characters',
-                      })}
-                    />
-                  </Field>
-                  <p className="mt-1.5 text-xs text-brand-text-muted">This appears on the About page.</p>
-                </div>
-
-                {/* LinkedIn */}
-                <div className="rounded-2xl border border-brand-border bg-brand-surface p-5">
-                  <Field label="LinkedIn URL" id="linkedIn" error={errors.linkedIn?.message}>
-                    <input
-                      id="linkedIn"
-                      type="url"
-                      placeholder="https://linkedin.com/in/yourprofile"
-                      aria-invalid={!!errors.linkedIn}
-                      aria-describedby={errors.linkedIn ? 'linkedIn-error' : undefined}
-                      className={inputClass(!!errors.linkedIn)}
-                      {...register('linkedIn', {
-                        pattern: {
-                          value: /^(https?:\/\/)?(www\.)?linkedin\.com\/.+/,
-                          message: 'Enter a valid LinkedIn URL',
-                        },
-                      })}
-                    />
-                  </Field>
-                  <p className="mt-1.5 text-xs text-brand-text-muted">Optional — shown as a link on your card.</p>
                 </div>
 
                 {submitError && (

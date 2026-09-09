@@ -11,8 +11,8 @@ import { POSITIONS } from '../../lib/positions'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface TeamMember {
-  id: string; name: string; title: string; bio: string
-  photoUrl?: string; linkedIn?: string; order: number; isVisible: boolean
+  id: string; name: string; title: string
+  photoUrl?: string; order: number; isVisible: boolean
   createdAt: string
 }
 
@@ -348,20 +348,10 @@ const AdminTeam = () => {
                 {...register('title')} />
             </div>
           )}
-          {[
-            { name: 'photoUrl' as const, label: 'Photo URL' },
-            { name: 'linkedIn' as const, label: 'LinkedIn URL' },
-          ].map(f => (
-            <div key={f.name}>
-              <label className="block text-sm font-medium text-brand-text-h mb-1">{f.label}</label>
-              <input className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
-                {...register(f.name)} />
-            </div>
-          ))}
           <div>
-            <label className="block text-sm font-medium text-brand-text-h mb-1">Bio</label>
-            <textarea rows={4} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
-              {...register('bio')} />
+            <label className="block text-sm font-medium text-brand-text-h mb-1">Photo URL</label>
+            <input className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+              {...register('photoUrl')} />
           </div>
           <div className="flex gap-4">
             <div className="flex-1">
