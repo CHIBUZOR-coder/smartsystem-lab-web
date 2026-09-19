@@ -7,14 +7,17 @@ import Modal from '../../components/ui/Modal'
 import SkeletonBox from '../../components/ui/SkeletonBox'
 import { AdminTableSkeleton } from '../../components/ui/SkeletonBox'
 import { POSITIONS } from '../../lib/positions'
+import { useAuthStore } from '../../store/authStore'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface TeamMember {
-  id: string; name: string; title: string
+  id: string; name: string; title: string; email?: string
   photoUrl?: string; order: number; isVisible: boolean
   createdAt: string
 }
+
+interface NewAdmin { id: string; name: string; email: string; role: 'SUPER_ADMIN' | 'EDITOR' }
 
 // Tenure since createdAt — the "member since" date used to track loyalty over time.
 const formatTenure = (createdAt: string) => {
@@ -128,6 +131,7 @@ const TeamTableSkeleton = () => (
 
 const AdminTeam = () => {
   const qc = useQueryClient()
+  const isSuperAdmin = useAuthStore(s => s.admin?.role === 'SUPER_ADMIN')
 
   // Team members state
   const [editing, setEditing]   = useState<TeamMember | null>(null)
@@ -139,6 +143,12 @@ const AdminTeam = () => {
   const [newLink, setNewLink]         = useState('')
   const [inviteFor, setInviteFor]     = useState<string>('new') // 'new' or memberId
   const [expiresIn, setExpiresIn]     = useState(24) // hours
+
+  // Make-admin state
+  const [adminTarget, setAdminTarget] = useState<TeamMember | null>(null)
+  const [adminEmail, setAdminEmail]   = useState('')
+  const [adminRole, setAdminRole]     = useState<'SUPER_ADMIN' | 'EDITOR'>('EDITOR')
+  const [newAdmin, setNewAdmin]       = useState<{ admin: NewAdmin; password: string } | null>(null)
 
   const { data, isLoading } = useQuery<{ data: TeamMember[] }>({
     queryKey: ['admin-team'],
@@ -194,6 +204,24 @@ const AdminTeam = () => {
   const revokeInvite = useMutation({
     mutationFn: (id: string) => api.delete(`/api/admin/invites/${id}`),
     onSuccess:  () => qc.invalidateQueries({ queryKey: ['admin-invites'] }),
+  })
+
+  const openMakeAdmin = (m: TeamMember) => {
+    setAdminTarget(m)
+    setAdminEmail(m.email ?? '')
+    setAdminRole('EDITOR')
+    setNewAdmin(null)
+  }
+
+  const makeAdmin = useMutation({
+    mutationFn: () => api.post<{ data: NewAdmin; temporaryPassword: string }>(
+      `/api/admin/team/${adminTarget?.id}/make-admin`,
+      { email: adminEmail, role: adminRole }
+    ),
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ['admin-team'] })
+      setNewAdmin({ admin: res.data.data, password: res.data.temporaryPassword })
+    },
   })
 
   const members = data?.data ?? []
@@ -259,6 +287,9 @@ const AdminTeam = () => {
                         <div className="flex gap-3">
                           <button onClick={() => openEdit(m)} title={`Edit ${m.name}'s details`} className="text-xs text-brand-green hover:underline">Edit</button>
                           <button onClick={() => openInviteModal(m.id)} title={`Generate a link for ${m.name} to update their own profile`} className="text-xs text-blue-500 hover:underline">Send edit link</button>
+                          {isSuperAdmin && (
+                            <button onClick={() => openMakeAdmin(m)} title={`Grant ${m.name} access to the admin panel`} className="text-xs text-purple-500 hover:underline">Make Admin</button>
+                          )}
                           <button onClick={() => setDeleteId(m.id)} title={`Permanently remove ${m.name} from the team`} className="text-xs text-brand-danger hover:underline">Delete</button>
                         </div>
                       </td>
@@ -447,6 +478,81 @@ const AdminTeam = () => {
                   Copy link
                 </Button>
                 <Button onClick={() => { setInviteModal(false); setNewLink('') }} title="Close this dialog">Done</Button>
+              </div>
+            </>
+          )}
+        </div>
+      </Modal>
+
+      {/* ── Make admin modal ──────────────────────────────────────────── */}
+      <Modal open={!!adminTarget} onClose={() => setAdminTarget(null)} title="Grant Admin Access" maxWidth="max-w-md">
+        <div className="p-6 space-y-5">
+          {!newAdmin ? (
+            <>
+              <p className="text-sm text-brand-text-body leading-relaxed">
+                This gives <span className="font-medium text-brand-text-h">{adminTarget?.name}</span> a login to this admin panel.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-brand-text-h mb-1">Email</label>
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={e => setAdminEmail(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-brand-text-h mb-1">Role</label>
+                <select
+                  value={adminRole}
+                  onChange={e => setAdminRole(e.target.value as 'SUPER_ADMIN' | 'EDITOR')}
+                  className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+                >
+                  <option value="EDITOR">Editor</option>
+                  <option value="SUPER_ADMIN">Super Admin</option>
+                </select>
+              </div>
+              {makeAdmin.isError && (
+                <p className="text-brand-danger text-sm">
+                  {(makeAdmin.error as { response?: { data?: { error?: string } } })?.response?.data?.error ?? 'Failed to create admin account.'}
+                </p>
+              )}
+              <div className="flex justify-end gap-3">
+                <Button variant="ghost" onClick={() => setAdminTarget(null)} title="Close without granting access">Cancel</Button>
+                <Button
+                  loading={makeAdmin.isPending}
+                  disabled={!adminEmail}
+                  onClick={() => makeAdmin.mutate()}
+                  title="Create the admin account"
+                >
+                  Grant access
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-brand-text-body">
+                <span className="font-medium text-brand-text-h">{newAdmin.admin.name}</span> can now log in. Share this temporary password with them — they should change it after signing in.
+              </p>
+              <div className="space-y-2">
+                <div className="rounded-xl border border-brand-border bg-brand-bg px-4 py-3">
+                  <p className="text-xs text-brand-text-muted mb-0.5">Email</p>
+                  <code className="text-xs text-brand-text-h break-all">{newAdmin.admin.email}</code>
+                </div>
+                <div className="rounded-xl border border-brand-border bg-brand-bg px-4 py-3">
+                  <p className="text-xs text-brand-text-muted mb-0.5">Temporary password</p>
+                  <code className="text-xs text-brand-green break-all">{newAdmin.password}</code>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => navigator.clipboard.writeText(newAdmin.password)}
+                  title="Copy the temporary password to your clipboard"
+                >
+                  Copy password
+                </Button>
+                <Button onClick={() => setAdminTarget(null)} title="Close this dialog">Done</Button>
               </div>
             </>
           )}
