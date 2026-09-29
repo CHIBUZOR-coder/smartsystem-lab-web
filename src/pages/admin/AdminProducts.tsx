@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
@@ -15,7 +15,7 @@ interface Product {
   features: string[]; targetUsers: string[]; imageUrl?: string; videoUrl?: string
 }
 
-type FormData = Omit<Product, 'id'> & { featuresRaw: string; targetUsersRaw: string }
+type FormData = Omit<Product, 'id' | 'features'> & { features: { value: string }[]; targetUsersRaw: string }
 
 const statusMap: Record<Product['status'], 'available' | 'pilot' | 'coming-soon'> = {
   AVAILABLE: 'available', PILOT: 'pilot', COMING_SOON: 'coming-soon',
@@ -65,18 +65,31 @@ const AdminProducts = () => {
     queryFn:  () => api.get('/api/admin/products').then(r => r.data),
   })
 
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<FormData>()
+  const { register, handleSubmit, reset, watch, setValue, control, formState: { errors } } = useForm<FormData>({
+    defaultValues: { features: [{ value: '' }] },
+  })
+  const { fields, append, remove } = useFieldArray({ control, name: 'features' })
 
-  const openAdd = () => { setEditing(null); reset({}); setModal(true) }
+  const openAdd = () => { setEditing(null); reset({ features: [{ value: '' }] }); setModal(true) }
   const openEdit = (p: Product) => {
     setEditing(p)
-    reset({ ...p, featuresRaw: p.features.join('\n'), targetUsersRaw: p.targetUsers.join('\n'), imageUrl: p.imageUrl ?? '', videoUrl: p.videoUrl ?? '' })
+    reset({
+      ...p,
+      features: (p.features.length ? p.features : ['']).map(value => ({ value })),
+      targetUsersRaw: p.targetUsers.join('\n'),
+      imageUrl: p.imageUrl ?? '',
+      videoUrl: p.videoUrl ?? '',
+    })
     setModal(true)
   }
 
   const save = useMutation({
     mutationFn: (d: FormData) => {
-      const payload = { ...d, features: d.featuresRaw.split('\n').filter(Boolean), targetUsers: d.targetUsersRaw.split('\n').filter(Boolean) }
+      const payload = {
+        ...d,
+        features: d.features.map(f => f.value).filter(Boolean),
+        targetUsers: d.targetUsersRaw.split('\n').filter(Boolean),
+      }
       return editing
         ? api.put(`/api/admin/products/${editing.id}`, payload)
         : api.post('/api/admin/products', payload)
@@ -182,9 +195,35 @@ const AdminProducts = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-text-h mb-1">Features <span className="text-brand-text-muted font-normal">(one per line)</span></label>
-            <textarea rows={4} className="w-full px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
-              {...register('featuresRaw')} />
+            <label className="block text-sm font-medium text-brand-text-h mb-1">Features</label>
+            <div className="space-y-2">
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex items-center gap-2">
+                  <input
+                    className="flex-1 px-3 py-2 rounded-lg border border-brand-border bg-brand-bg-alt text-brand-text-h text-sm focus:outline-none focus:ring-2 focus:ring-brand-green"
+                    placeholder={`Feature ${index + 1}`}
+                    {...register(`features.${index}.value` as const)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    disabled={fields.length === 1}
+                    title="Remove this feature"
+                    className="text-xs text-brand-danger hover:underline disabled:opacity-40 disabled:pointer-events-none shrink-0"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => append({ value: '' })}
+              title="Add another feature"
+              className="mt-2 text-xs font-medium text-brand-green hover:underline"
+            >
+              + Add feature
+            </button>
           </div>
 
           <div>
