@@ -6,6 +6,7 @@ import api from '../lib/api'
 import Badge from '../components/ui/Badge'
 import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources } from '../lib/productVisuals'
 import SeoHead from '../components/ui/SeoHead'
+import GarageCard from '../components/garage/GarageCard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -266,18 +267,19 @@ const Products = () => {
           </p>
         )}
 
-        {!isLoading && filtered?.length === 0 && (
-          <p className="text-center text-[#638A85] py-16">
-            No products in this category yet.
-          </p>
-        )}
-
-        {filtered && filtered.length > 0 && (
+        {filtered && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filter === 'ALL' && <GarageCard />}
             {filtered.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+        )}
+
+        {!isLoading && filtered?.length === 0 && filter !== 'ALL' && (
+          <p className="text-center text-[#638A85] py-16">
+            No products in this category yet.
+          </p>
         )}
       </section>
     </div>

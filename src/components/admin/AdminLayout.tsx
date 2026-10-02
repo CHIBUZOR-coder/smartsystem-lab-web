@@ -14,6 +14,7 @@ const navItems = [
   { label: 'Insights',   to: `${ADMIN_BASE}/insights`,    icon: '◎' },
   { label: 'FAQ',        to: `${ADMIN_BASE}/faq`,         icon: '◌' },
   { label: 'Leads',      to: `${ADMIN_BASE}/leads`,       icon: '◍' },
+  { label: 'Car Approvals', to: `${ADMIN_BASE}/cars`,     icon: '◐' },
 ]
 
 // ─── Sidebar content (shared between desktop and mobile drawer) ───────────────

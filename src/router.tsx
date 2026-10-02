@@ -22,6 +22,15 @@ const Contact       = lazy(() => import('./pages/Contact'))
 const NotFound      = lazy(() => import('./pages/NotFound'))
 const Onboarding    = lazy(() => import('./pages/Onboarding'))
 
+// Garage Section (car marketplace) — public + dealer pages (lazy loaded)
+const Garage          = lazy(() => import('./pages/garage/Garage'))
+const CarDetail       = lazy(() => import('./pages/garage/CarDetail'))
+const DealerProfile   = lazy(() => import('./pages/garage/DealerProfile'))
+const DealerSignup    = lazy(() => import('./pages/garage/DealerSignup'))
+const DealerLogin     = lazy(() => import('./pages/garage/DealerLogin'))
+const DealerDashboard = lazy(() => import('./pages/garage/DealerDashboard'))
+import DealerPrivateRoute from './components/garage/DealerPrivateRoute'
+
 // Admin layout + pages (lazy loaded)
 import AdminLayout    from './components/admin/AdminLayout'
 import PrivateRoute   from './components/admin/PrivateRoute'
@@ -34,6 +43,7 @@ const AdminTeam       = lazy(() => import('./pages/admin/AdminTeam'))
 const AdminInsights   = lazy(() => import('./pages/admin/AdminInsights'))
 const AdminFaq        = lazy(() => import('./pages/admin/AdminFaq'))
 const AdminLeads      = lazy(() => import('./pages/admin/AdminLeads'))
+const AdminCars       = lazy(() => import('./pages/admin/AdminCars'))
 
 const wrap      = (el: React.ReactNode) => <Suspense fallback={<PageSkeleton />}>{el}</Suspense>
 const wrapAdmin = (el: React.ReactNode) => <Suspense fallback={<AdminPageSkeleton />}>{el}</Suspense>
@@ -57,6 +67,9 @@ const router = createBrowserRouter([
       { element: wrap(<InsightDetail />), path: 'insights/:id' },
       { element: wrap(<FAQ />),           path: 'faq' },
       { element: wrap(<Contact />),       path: 'contact' },
+      { element: wrap(<Garage />),        path: 'garage' },
+      { element: wrap(<CarDetail />),     path: 'garage/:id' },
+      { element: wrap(<DealerProfile />), path: 'garage/dealer/:dealerId' },
       { element: wrap(<NotFound />),      path: '*' },
     ],
   },
@@ -65,6 +78,19 @@ const router = createBrowserRouter([
   {
     path: '/onboarding',
     element: wrap(<Onboarding />),
+    errorElement: <RouteErrorBoundary />,
+  },
+
+  // ── Garage Section — dealer auth pages (no Navbar/Footer) ────────────────
+  { path: '/garage/signup', element: wrap(<DealerSignup />), errorElement: <RouteErrorBoundary /> },
+  { path: '/garage/login',  element: wrap(<DealerLogin />),  errorElement: <RouteErrorBoundary /> },
+  {
+    path: '/garage/dashboard',
+    element: (
+      <DealerPrivateRoute>
+        {wrap(<DealerDashboard />)}
+      </DealerPrivateRoute>
+    ),
     errorElement: <RouteErrorBoundary />,
   },
 
@@ -89,6 +115,7 @@ const router = createBrowserRouter([
       { path: 'insights', element: wrapAdmin(<AdminInsights />) },
       { path: 'faq',      element: wrapAdmin(<AdminFaq />) },
       { path: 'leads',    element: wrapAdmin(<AdminLeads />) },
+      { path: 'cars',     element: wrapAdmin(<AdminCars />) },
     ],
   },
 ])
