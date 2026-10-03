@@ -9,6 +9,7 @@ import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources } from '../lib
 import { useSlideshow } from '../lib/useSlideshow'
 import SlideshowImage from '../components/ui/SlideshowImage'
 import SeoHead from '../components/ui/SeoHead'
+import GarageCard from '../components/garage/GarageCard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -447,12 +448,17 @@ const Home = () => {
             />
           </FadeUp>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {isLoading
-              ? [0, 1, 2].map((i) => <ProductSkeleton key={i} />)
-              : (products ?? []).map((p, i) => (
-                  <ProductCard key={p.id} product={p} index={i} />
-                ))}
+              ? [0, 1, 2, 3].map((i) => <ProductSkeleton key={i} />)
+              : (
+                <>
+                  <GarageCard />
+                  {(products ?? []).map((p, i) => (
+                    <ProductCard key={p.id} product={p} index={i} />
+                  ))}
+                </>
+              )}
           </div>
 
           <FadeUp className="mt-10 text-center" delay={0.3}>
