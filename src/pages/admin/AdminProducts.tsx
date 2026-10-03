@@ -5,14 +5,14 @@ import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
-import ImageUpload from '../../components/admin/ImageUpload'
 import VideoUpload from '../../components/admin/VideoUpload'
 import SkeletonBox from '../../components/ui/SkeletonBox'
+import MultiImageUpload from '../../components/garage/MultiImageUpload'
 
 interface Product {
   id: string; slug: string; name: string; tagline: string; description: string
   category: string; status: 'AVAILABLE' | 'PILOT' | 'COMING_SOON'
-  features: string[]; targetUsers: string[]; imageUrl?: string; videoUrl?: string
+  features: string[]; targetUsers: string[]; images: string[]; videoUrl?: string
 }
 
 type FormData = Omit<Product, 'id' | 'features'> & { features: { value: string }[]; targetUsersRaw: string }
@@ -70,14 +70,14 @@ const AdminProducts = () => {
   })
   const { fields, append, remove } = useFieldArray({ control, name: 'features' })
 
-  const openAdd = () => { setEditing(null); reset({ features: [{ value: '' }] }); setModal(true) }
+  const openAdd = () => { setEditing(null); reset({ features: [{ value: '' }], images: [] }); setModal(true) }
   const openEdit = (p: Product) => {
     setEditing(p)
     reset({
       ...p,
       features: (p.features.length ? p.features : ['']).map(value => ({ value })),
       targetUsersRaw: p.targetUsers.join('\n'),
-      imageUrl: p.imageUrl ?? '',
+      images: p.images ?? [],
       videoUrl: p.videoUrl ?? '',
     })
     setModal(true)
@@ -172,11 +172,11 @@ const AdminProducts = () => {
               {...register('description', { required: 'Description is required' })} />
           </div>
 
-          <ImageUpload
+          <MultiImageUpload
             folder="products"
-            value={watch('imageUrl') ?? ''}
-            onChange={url => setValue('imageUrl', url)}
-            label="Product Image"
+            value={watch('images') ?? []}
+            onChange={urls => setValue('images', urls)}
+            label="Product Images (3-5 recommended — card photo rotates through them)"
           />
 
           <VideoUpload

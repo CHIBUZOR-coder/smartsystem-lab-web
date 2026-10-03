@@ -1,4 +1,4 @@
-import { useState, useRef, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -6,6 +6,8 @@ import api from '../lib/api'
 import ParticleCanvas from '../components/ui/ParticleCanvas'
 import Button from '../components/ui/Button'
 import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources } from '../lib/productVisuals'
+import { useSlideshow } from '../lib/useSlideshow'
+import SlideshowImage from '../components/ui/SlideshowImage'
 import SeoHead from '../components/ui/SeoHead'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -18,7 +20,7 @@ interface Product {
   category: string
   status: 'AVAILABLE' | 'PILOT' | 'COMING_SOON'
   features: string[]
-  imageUrl: string | null
+  images: string[]
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -258,9 +260,8 @@ function StatusBadge({ status }: { status: Product['status'] }) {
 
 function ProductCard({ product, index }: { product: Product; index: number }) {
   const visual   = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
-  const sources  = getProductImageSources(product.imageUrl, visual)
-  const [srcIdx, setSrcIdx] = useState(0)
-  const imgSrc   = sources[srcIdx] ?? null
+  const sources  = getProductImageSources(product.images, visual)
+  const [slideIdx, setSlideIdx] = useSlideshow(sources.length)
 
   return (
     <motion.div
@@ -287,13 +288,12 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
 
         {/* Visual header */}
         <div className="relative z-10 h-44 overflow-hidden" style={{ background: visual.bg }}>
-          {imgSrc ? (
-            <img
-              src={imgSrc}
+          {sources.length > 0 ? (
+            <SlideshowImage
+              images={sources}
+              index={slideIdx}
               alt={product.name}
-              onError={() => setSrcIdx(i => i + 1)}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
+              onError={() => setSlideIdx(i => (i + 1) % sources.length)}
             />
           ) : (
             <div className="absolute inset-0 p-4 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">

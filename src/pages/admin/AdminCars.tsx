@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import SkeletonBox from '../../components/ui/SkeletonBox'
 import CarForm, { type CarFormValues } from '../../components/garage/CarForm'
+import MultiImageUpload from '../../components/garage/MultiImageUpload'
 
 type CarStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 
@@ -55,6 +56,47 @@ const CarsTableSkeleton = () => (
   </div>
 )
 
+const GarageCardPanel = () => {
+  const qc = useQueryClient()
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-garage-card'],
+    queryFn:  () => api.get('/api/admin/garage-card').then(r => r.data.data as { images: string[] }),
+  })
+  const [images, setImages] = useState<string[]>([])
+  const [dirty, setDirty]   = useState(false)
+
+  useEffect(() => { if (data) setImages(data.images) }, [data])
+
+  const save = useMutation({
+    mutationFn: (imgs: string[]) => api.put('/api/admin/garage-card', { images: imgs }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-garage-card'] })
+      qc.invalidateQueries({ queryKey: ['garage-card'] })
+      setDirty(false)
+    },
+  })
+
+  if (isLoading) return null
+
+  return (
+    <div className="bg-brand-surface rounded-xl border border-brand-border p-5 mb-6">
+      <h2 className="text-sm font-semibold text-brand-text-h mb-1">Garage Card Images</h2>
+      <p className="text-xs text-brand-text-muted mb-3">Shown on the "Garage Section" card on the public /products page.</p>
+      <MultiImageUpload
+        folder="garage"
+        value={images}
+        onChange={urls => { setImages(urls); setDirty(true) }}
+        label="Images"
+      />
+      {dirty && (
+        <div className="flex justify-end mt-3">
+          <Button size="sm" loading={save.isPending} onClick={() => save.mutate(images)}>Save</Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const AdminCars = () => {
   const qc = useQueryClient()
   const [filter, setFilter]     = useState<CarStatus | 'ALL'>('PENDING')
@@ -95,6 +137,8 @@ const AdminCars = () => {
 
   return (
     <div>
+      <GarageCardPanel />
+
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-brand-teal">Car Approvals</h1>
         <Button onClick={openAdd} size="sm" title="Add a new car listing">+ Add Car</Button>

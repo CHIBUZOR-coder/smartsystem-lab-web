@@ -105,18 +105,16 @@ export const FALLBACK_VISUAL: ProductVisual = {
   fallbackVideoUrl: '',
 }
 
-// Priority: admin DB image → Unsplash fallback → illustration (when imgSrc is null)
+// Priority: admin-uploaded images (any number, slideshow if more than one) →
+// single Unsplash fallback → illustration (when the returned list is empty).
 // Picsum is excluded — it returns 503 which browsers cache, breaking reloads.
 export function getProductImageSources(
-  imageUrl: string | null,
+  images: string[],
   visual: ProductVisual,
 ): string[] {
-  const sources: string[] = []
-  // 1. Real admin-uploaded image (Cloudinary or any non-picsum URL)
-  if (imageUrl && !imageUrl.includes('picsum.photos')) sources.push(imageUrl)
-  // 2. Unsplash — always reliable, survives page reloads
-  if (visual.fallbackImageUrl) sources.push(visual.fallbackImageUrl)
-  return sources
+  const real = images.filter(url => url && !url.includes('picsum.photos'))
+  if (real.length > 0) return real
+  return visual.fallbackImageUrl ? [visual.fallbackImageUrl] : []
 }
 
 // Returns the admin video if set, otherwise the per-product sample video.

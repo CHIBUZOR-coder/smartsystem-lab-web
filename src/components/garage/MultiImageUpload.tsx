@@ -1,13 +1,16 @@
 import { useRef, useState } from 'react'
 import api from '../../lib/api'
 
+type Folder = 'products' | 'cars' | 'garage'
+
 interface MultiImageUploadProps {
+  folder: Folder
   value: string[]
   onChange: (urls: string[]) => void
   label?: string
 }
 
-const MultiImageUpload = ({ value, onChange, label = 'Photos' }: MultiImageUploadProps) => {
+const MultiImageUpload = ({ folder, value, onChange, label = 'Photos' }: MultiImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError]         = useState<string | null>(null)
@@ -19,7 +22,7 @@ const MultiImageUpload = ({ value, onChange, label = 'Photos' }: MultiImageUploa
       for (const file of Array.from(files)) {
         const body = new FormData()
         body.append('image', file)
-        const { data } = await api.post<{ url: string }>('/api/upload?folder=cars', body, {
+        const { data } = await api.post<{ url: string }>(`/api/upload?folder=${folder}`, body, {
           headers: { 'Content-Type': undefined },
         })
         onChange([...value, data.url])
@@ -37,7 +40,11 @@ const MultiImageUpload = ({ value, onChange, label = 'Photos' }: MultiImageUploa
   }
 
   function removeAt(index: number) {
+    const url = value[index]
     onChange(value.filter((_, i) => i !== index))
+    // Best-effort — removes the orphaned file from Cloudinary; the field is
+    // already updated above regardless of whether this succeeds.
+    api.delete('/api/upload', { data: { url } }).catch(() => { /* ignore */ })
   }
 
   return (

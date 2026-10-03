@@ -21,7 +21,7 @@ interface Product {
   status:      ProductStatus
   features:    unknown
   targetUsers: unknown
-  imageUrl:    string | null
+  images:      string[]
   videoUrl:    string | null
 }
 
@@ -136,7 +136,7 @@ const ProductDetailPageSkeleton = () => (
 
 const RelatedCard = ({ product }: { product: Product }) => {
   const visual   = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
-  const sources  = getProductImageSources(product.imageUrl, visual)
+  const sources  = getProductImageSources(product.images, visual)
   const [srcIdx, setSrcIdx] = useState(0)
   const imgSrc   = sources[srcIdx] ?? null
   return (
@@ -219,7 +219,7 @@ const ProductDetail = () => {
   const features    = toStringArray(product.features)
   const targetUsers = toStringArray(product.targetUsers)
   const related     = allProducts?.filter(p => p.slug !== product.slug) ?? []
-  const heroSources = getProductImageSources(product.imageUrl, visual)
+  const heroSources = getProductImageSources(product.images, visual)
   const heroSrc     = heroSources[heroIdx] ?? null
   const videoUrl    = getProductVideoUrl(product.videoUrl, visual)
 
@@ -236,7 +236,7 @@ const ProductDetail = () => {
         style={{ background: visual.bg }}
       >
         {/* Illustration backdrop */}
-        {!product.imageUrl && (
+        {product.images.length === 0 && (
           <div className="absolute inset-0 flex items-end justify-end opacity-20 pointer-events-none">
             <div className="w-96 h-64 mr-8">{visual.illustration}</div>
           </div>

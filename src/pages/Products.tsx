@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import api from '../lib/api'
 import Badge from '../components/ui/Badge'
 import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources } from '../lib/productVisuals'
+import { useSlideshow } from '../lib/useSlideshow'
+import SlideshowImage from '../components/ui/SlideshowImage'
 import SeoHead from '../components/ui/SeoHead'
 import GarageCard from '../components/garage/GarageCard'
 
@@ -20,7 +22,7 @@ interface Product {
   tagline:  string
   category: string
   status:   ProductStatus
-  imageUrl: string | null
+  images:   string[]
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -50,9 +52,8 @@ const ArrowRightIcon = () => (
 
 const ProductCard = ({ product }: { product: Product }) => {
   const visual = PRODUCT_VISUALS[product.slug] ?? FALLBACK_VISUAL
-  const sources = getProductImageSources(product.imageUrl, visual)
-  const [srcIndex, setSrcIndex] = useState(0)
-  const imgSrc = sources[srcIndex] ?? null
+  const sources = getProductImageSources(product.images, visual)
+  const [slideIndex, setSlideIndex] = useSlideshow(sources.length)
 
   return (
     <motion.div
@@ -78,12 +79,12 @@ const ProductCard = ({ product }: { product: Product }) => {
 
         {/* Visual header */}
         <div className="relative z-10 h-48 overflow-hidden" style={{ background: visual.bg }}>
-          {imgSrc ? (
-            <img
-              src={imgSrc}
+          {sources.length > 0 ? (
+            <SlideshowImage
+              images={sources}
+              index={slideIndex}
               alt={product.name}
-              onError={() => setSrcIndex(i => i + 1)}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              onError={() => setSlideIndex(i => (i + 1) % sources.length)}
             />
           ) : (
             <div className="absolute inset-0 p-6 flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">

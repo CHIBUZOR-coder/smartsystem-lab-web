@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useQuery } from '@tanstack/react-query'
+import api from '../../lib/api'
+import { useSlideshow } from '../../lib/useSlideshow'
+import SlideshowImage from '../ui/SlideshowImage'
 
 const ArrowRightIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -16,7 +20,19 @@ const CarIllustration = () => (
   </svg>
 )
 
-const GarageCard = () => (
+const GarageCard = () => {
+  const { data } = useQuery({
+    queryKey: ['garage-card'],
+    queryFn: async () => {
+      const { data } = await api.get<{ images: string[] }>('/api/garage-card')
+      return data
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+  const images = data?.images ?? []
+  const [slideIdx, setSlideIdx] = useSlideshow(images.length)
+
+  return (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -38,9 +54,18 @@ const GarageCard = () => (
       />
 
       <div className="relative z-10 h-48 overflow-hidden flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0A2828 0%, #061414 100%)' }}>
-        <div className="opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
-          <CarIllustration />
-        </div>
+        {images.length > 0 ? (
+          <SlideshowImage
+            images={images}
+            index={slideIdx}
+            alt="Garage Section"
+            onError={() => setSlideIdx(i => (i + 1) % images.length)}
+          />
+        ) : (
+          <div className="opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+            <CarIllustration />
+          </div>
+        )}
         <div className="absolute top-3 left-3">
           <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-black/40 text-[#00C896] backdrop-blur-sm border border-[#00C896]/20 group-hover:border-[#00C896]/50 group-hover:bg-[#00C896]/10 transition-all duration-300">
             Marketplace
@@ -66,6 +91,7 @@ const GarageCard = () => (
       </div>
     </Link>
   </motion.div>
-)
+  )
+}
 
 export default GarageCard

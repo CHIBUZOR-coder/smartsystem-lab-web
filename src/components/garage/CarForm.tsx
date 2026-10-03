@@ -99,6 +99,7 @@ const CarForm = ({ defaultValues, onSubmit, submitting, submitLabel, onCancel, e
       </div>
 
       <MultiImageUpload
+        folder="cars"
         value={watch('images') ?? []}
         onChange={urls => setValue('images', urls)}
         label="Photos"
