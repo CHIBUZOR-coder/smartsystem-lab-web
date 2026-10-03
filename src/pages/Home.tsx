@@ -271,7 +271,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: 'easeOut' }}
       whileHover={{ y: -8, transition: { type: 'spring', stiffness: 300, damping: 22 } }}
-      className="h-full"
+      className="h-full w-full"
     >
       <Link
         to={`/products/${product.slug}`}

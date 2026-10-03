@@ -39,7 +39,7 @@ const GarageCard = () => {
     viewport={{ once: true, margin: '-60px' }}
     transition={{ duration: 0.4 }}
     whileHover={{ y: -8, transition: { type: 'spring', stiffness: 300, damping: 22 } }}
-    className="h-full"
+    className="h-full w-full"
   >
     <Link
       to="/garage"
