@@ -10,7 +10,7 @@ interface Lead {
 }
 
 const reasonLabel: Record<string, string> = {
-  demo: 'Request Demo', partnership: 'Partnership', general: 'General Enquiry',
+  demo: 'Pre-order', partnership: 'Partnership', general: 'General Enquiry',
 }
 
 // Name | Email | Company | Type | Date | View (6 cols)

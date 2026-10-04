@@ -164,7 +164,7 @@ const Contact = () => {
     <div className="overflow-x-hidden">
       <SeoHead
         title="Contact Us"
-        description="Request a product demo, ask a deployment question, or explore a partnership with AZ SmartSystem Lab. Our team responds within one business day."
+        description="Pre-order a product, ask a deployment question, or explore a partnership with AZ SmartSystem Lab. Our team responds within one business day."
       />
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
@@ -201,7 +201,7 @@ const Contact = () => {
             transition={{ duration: 0.55, delay: 0.2 }}
             className="mt-6 text-lg text-[#A8D5C8] leading-relaxed max-w-2xl"
           >
-            Whether you want a product demo, have a deployment question, or want to explore a
+            Whether you want to pre-order a product, have a deployment question, or want to explore a
             partnership — fill in the form and our team will respond within one business day.
           </motion.p>
         </div>
@@ -302,7 +302,7 @@ const Contact = () => {
                         className={[inputCls, errors.reason ? 'border-brand-danger' : ''].join(' ')}
                         {...register('reason', { required: true })}
                       >
-                        <option value="demo">Request a demo</option>
+                        <option value="demo">Pre-order a product</option>
                         <option value="partnership">Partnership / integration</option>
                         <option value="general">General enquiry</option>
                       </select>
