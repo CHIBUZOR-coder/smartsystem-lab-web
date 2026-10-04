@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import api from '../lib/api'
 import Button from '../components/ui/Button'
 import SeoHead from '../components/ui/SeoHead'
+import SocialLinks from '../components/ui/SocialLinks'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,6 +103,10 @@ const ContactSidebar = () => (
           </svg>
           <span>Lagos, Nigeria</span>
         </div>
+        <SocialLinks
+          className="pt-1"
+          iconClassName="h-8 w-8 rounded-lg bg-brand-bg-alt border border-brand-border flex items-center justify-center text-brand-text-muted hover:text-brand-green hover:border-brand-green/40 transition-colors duration-150"
+        />
       </div>
     </div>
 

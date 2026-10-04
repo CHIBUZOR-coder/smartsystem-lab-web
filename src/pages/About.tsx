@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import api from '../lib/api'
 import Button from '../components/ui/Button'
 import SeoHead from '../components/ui/SeoHead'
+import SocialLinks from '../components/ui/SocialLinks'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -379,6 +380,12 @@ const About = () => {
                   <Link to="/contact">
                     <Button size="md" variant="primary">Get in Touch</Button>
                   </Link>
+                </div>
+                <div className="mt-6">
+                  <span className="block text-xs font-semibold uppercase tracking-widest text-brand-text-muted mb-3">
+                    Follow Us
+                  </span>
+                  <SocialLinks iconClassName="h-9 w-9 rounded-lg bg-brand-bg-alt border border-brand-border flex items-center justify-center text-brand-text-muted hover:text-brand-green hover:border-brand-green/40 transition-colors duration-150" />
                 </div>
               </div>
             </FadeUp>

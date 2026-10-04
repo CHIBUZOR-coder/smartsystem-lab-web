@@ -365,6 +365,7 @@ const Home = () => {
       <SeoHead
         title="Smart Building Intelligence for Africa"
         description="AZ SmartSystem Lab builds AI-powered occupancy sensing, energy monitoring, and asset tracking products for hotels, short-let properties, and corporate facilities across Africa."
+        includeOrganizationSchema
       />
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
