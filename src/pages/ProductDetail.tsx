@@ -296,7 +296,7 @@ const ProductDetail = () => {
               to="/contact"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#00C896] text-[#061414] font-semibold hover:bg-[#00E5AD] transition-colors shadow-lg"
             >
-              Request a demo <ArrowRightIcon />
+              Click to pre-order <ArrowRightIcon />
             </Link>
           </motion.div>
         </div>
