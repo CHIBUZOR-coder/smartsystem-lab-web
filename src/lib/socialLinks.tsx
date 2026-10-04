@@ -33,6 +33,6 @@ export interface SocialLink {
 export const SOCIAL_LINKS: SocialLink[] = [
   { label: 'LinkedIn',  href: 'https://www.linkedin.com/company/allinzucolsmartsystem-lab/', icon: LinkedInIcon,  placeholder: false },
   { label: 'Instagram', href: '#', icon: InstagramIcon, placeholder: true },
-  { label: 'YouTube',   href: '#', icon: YouTubeIcon,   placeholder: true },
+  { label: 'YouTube',   href: 'https://www.youtube.com/@AZsmartsystemLab', icon: YouTubeIcon, placeholder: false },
   { label: 'Facebook',  href: '#', icon: FacebookIcon,  placeholder: true },
 ]
