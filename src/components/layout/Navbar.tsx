@@ -188,7 +188,7 @@ const Navbar = () => {
             <ThemeToggle isDark={isDark} />
             <Link to='/contact' className='hidden sm:block'>
               <Button size='sm' variant='primary'>
-                Request Demo
+                Pre-Order Now
               </Button>
             </Link>
 
@@ -338,7 +338,7 @@ const Navbar = () => {
               >
                 <Link to='/contact' onClick={() => setMobileOpen(false)}>
                   <Button variant='primary' className='w-full'>
-                    Request Demo
+                    Pre-Order Now
                   </Button>
                 </Link>
               </div>
