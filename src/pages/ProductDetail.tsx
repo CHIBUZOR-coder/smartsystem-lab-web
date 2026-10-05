@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
 import Badge from '../components/ui/Badge'
-import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources, getProductVideoUrl } from '../lib/productVisuals'
+import { PRODUCT_VISUALS, FALLBACK_VISUAL, getProductImageSources, getProductVideoUrl, getYouTubeEmbedUrl } from '../lib/productVisuals'
 import SeoHead from '../components/ui/SeoHead'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -222,6 +222,7 @@ const ProductDetail = () => {
   const heroSources = getProductImageSources(product.images, visual)
   const heroSrc     = heroSources[heroIdx] ?? null
   const videoUrl    = getProductVideoUrl(product.videoUrl, visual)
+  const youTubeEmbedUrl = videoUrl ? getYouTubeEmbedUrl(videoUrl) : null
 
   return (
     <div className="min-h-screen bg-[#061414]">
@@ -318,14 +319,24 @@ const ProductDetail = () => {
           <section>
             <h2 className="text-xl font-bold text-[#E6F5F0] mb-4">See it in action</h2>
             <div className="rounded-2xl overflow-hidden border border-[#1A3D3D] bg-black">
-              <video
-                src={videoUrl}
-                controls
-                poster={heroSrc || undefined}
-                className="w-full aspect-video max-h-[60vh] block object-contain bg-black"
-              >
-                Your browser does not support the video element.
-              </video>
+              {youTubeEmbedUrl ? (
+                <iframe
+                  src={youTubeEmbedUrl}
+                  title={`${product.name} video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full aspect-video max-h-[60vh] block"
+                />
+              ) : (
+                <video
+                  src={videoUrl}
+                  controls
+                  poster={heroSrc || undefined}
+                  className="w-full aspect-video max-h-[60vh] block object-contain bg-black"
+                >
+                  Your browser does not support the video element.
+                </video>
+              )}
             </div>
           </section>
         )}

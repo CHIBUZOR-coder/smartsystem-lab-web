@@ -124,3 +124,17 @@ export function getProductVideoUrl(
 ): string {
   return videoUrl || visual.fallbackVideoUrl
 }
+
+// Detects YouTube links (watch, short youtu.be, shorts, embed) and returns an
+// embeddable player URL, or null if the given URL isn't a YouTube link.
+export function getYouTubeEmbedUrl(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{11})/,
+    /youtu\.be\/([\w-]{11})/,
+  ]
+  for (const pattern of patterns) {
+    const match = url.match(pattern)
+    if (match) return `https://www.youtube.com/embed/${match[1]}`
+  }
+  return null
+}
