@@ -117,14 +117,6 @@ export function getProductImageSources(
   return visual.fallbackImageUrl ? [visual.fallbackImageUrl] : []
 }
 
-// Returns the admin video if set, otherwise the per-product sample video.
-export function getProductVideoUrl(
-  videoUrl: string | null,
-  visual: ProductVisual,
-): string {
-  return videoUrl || visual.fallbackVideoUrl
-}
-
 // Detects YouTube links (watch, short youtu.be, shorts, embed) and returns an
 // embeddable player URL, or null if the given URL isn't a YouTube link.
 export function getYouTubeEmbedUrl(url: string): string | null {
@@ -137,4 +129,25 @@ export function getYouTubeEmbedUrl(url: string): string | null {
     if (match) return `https://www.youtube.com/embed/${match[1]}`
   }
   return null
+}
+
+export type ProductVideo =
+  | { kind: 'youtube'; embedUrl: string }
+  | { kind: 'file'; url: string }
+  | null
+
+// Priority: admin-set YouTube link → admin-uploaded video file → per-product
+// sample video. A YouTube link always wins over an uploaded file, so switching
+// a product from an uploaded video to a YouTube link (or back) just means
+// setting/clearing the one field — the other is left alone.
+export function getProductVideo(
+  youtubeUrl: string | null | undefined,
+  videoUrl: string | null | undefined,
+  visual: ProductVisual,
+): ProductVideo {
+  const embedUrl = youtubeUrl ? getYouTubeEmbedUrl(youtubeUrl) : null
+  if (embedUrl) return { kind: 'youtube', embedUrl }
+
+  const file = videoUrl || visual.fallbackVideoUrl
+  return file ? { kind: 'file', url: file } : null
 }

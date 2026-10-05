@@ -6,13 +6,14 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Badge from '../../components/ui/Badge'
 import VideoUpload from '../../components/admin/VideoUpload'
+import YouTubeLinkField from '../../components/admin/YouTubeLinkField'
 import SkeletonBox from '../../components/ui/SkeletonBox'
 import MultiImageUpload from '../../components/garage/MultiImageUpload'
 
 interface Product {
   id: string; slug: string; name: string; tagline: string; description: string
   category: string; status: 'AVAILABLE' | 'PILOT' | 'COMING_SOON'
-  features: string[]; targetUsers: string[]; images: string[]; videoUrl?: string
+  features: string[]; targetUsers: string[]; images: string[]; videoUrl?: string; youtubeUrl?: string
 }
 
 type FormData = Omit<Product, 'id' | 'features'> & { features: { value: string }[]; targetUsersRaw: string }
@@ -79,6 +80,7 @@ const AdminProducts = () => {
       targetUsersRaw: p.targetUsers.join('\n'),
       images: p.images ?? [],
       videoUrl: p.videoUrl ?? '',
+      youtubeUrl: p.youtubeUrl ?? '',
     })
     setModal(true)
   }
@@ -182,6 +184,11 @@ const AdminProducts = () => {
           <VideoUpload
             value={watch('videoUrl') ?? ''}
             onChange={url => setValue('videoUrl', url)}
+          />
+
+          <YouTubeLinkField
+            value={watch('youtubeUrl') ?? ''}
+            onChange={url => setValue('youtubeUrl', url)}
           />
 
           <div>

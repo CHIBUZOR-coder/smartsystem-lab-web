@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../../lib/api'
-import { getYouTubeEmbedUrl } from '../../lib/productVisuals'
 
 interface VideoUploadProps {
   value: string
@@ -14,8 +13,6 @@ const VideoUpload = ({ value, onChange, label = 'Product Video' }: VideoUploadPr
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress]   = useState(0)
   const [error, setError]         = useState<string | null>(null)
-  const [mode, setMode]           = useState<'upload' | 'link'>('upload')
-  const [linkDraft, setLinkDraft] = useState('')
 
   async function handleFile(file: File) {
     setError(null)
@@ -52,43 +49,13 @@ const VideoUpload = ({ value, onChange, label = 'Product Video' }: VideoUploadPr
 
   function handleClear() {
     onChange('')
-    setLinkDraft('')
     setError(null)
     if (inputRef.current) inputRef.current.value = ''
   }
 
-  function handleLinkSubmit() {
-    const url = linkDraft.trim()
-    if (!url) return
-    setError(null)
-    onChange(url)
-  }
-
-  const youTubeEmbedUrl = value ? getYouTubeEmbedUrl(value) : null
-
   return (
     <div className="space-y-1.5">
       <label className="block text-sm font-medium text-[#E6F5F0]">{label}</label>
-
-      {!value && (
-        <div className="flex gap-1 p-1 rounded-lg bg-[#0A2424] border border-[#1A3D3D] w-fit">
-          {(['upload', 'link'] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMode(m)}
-              className={[
-                'px-3 py-1 text-xs rounded-md transition-colors',
-                mode === m
-                  ? 'bg-[#00C896]/15 text-[#00C896]'
-                  : 'text-[#638A85] hover:text-[#E6F5F0]',
-              ].join(' ')}
-            >
-              {m === 'upload' ? 'Upload file' : 'Paste link'}
-            </button>
-          ))}
-        </div>
-      )}
 
       <AnimatePresence mode="wait">
         {value ? (
@@ -99,23 +66,12 @@ const VideoUpload = ({ value, onChange, label = 'Product Video' }: VideoUploadPr
             exit={{ opacity: 0 }}
             className="space-y-2"
           >
-            {youTubeEmbedUrl ? (
-              <iframe
-                src={youTubeEmbedUrl}
-                title="Video preview"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full rounded-xl border border-[#1A3D3D] bg-black aspect-video"
-                style={{ maxHeight: '220px' }}
-              />
-            ) : (
-              <video
-                src={value}
-                controls
-                className="w-full rounded-xl border border-[#1A3D3D] bg-black"
-                style={{ maxHeight: '220px' }}
-              />
-            )}
+            <video
+              src={value}
+              controls
+              className="w-full rounded-xl border border-[#1A3D3D] bg-black"
+              style={{ maxHeight: '220px' }}
+            />
             {!uploading && (
               <button
                 type="button"
@@ -125,30 +81,6 @@ const VideoUpload = ({ value, onChange, label = 'Product Video' }: VideoUploadPr
                 Remove video
               </button>
             )}
-          </motion.div>
-        ) : mode === 'link' ? (
-          <motion.div
-            key="link"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex gap-2"
-          >
-            <input
-              type="url"
-              value={linkDraft}
-              onChange={(e) => setLinkDraft(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleLinkSubmit() } }}
-              placeholder="https://www.youtube.com/watch?v=..."
-              className="flex-1 rounded-xl border border-[#1A3D3D] bg-[#0A2424] px-3 py-2 text-sm text-[#E6F5F0] placeholder:text-[#3D6060] focus:outline-none focus:border-[#00C896]/50"
-            />
-            <button
-              type="button"
-              onClick={handleLinkSubmit}
-              className="px-4 rounded-xl bg-[#00C896]/15 text-[#00C896] text-sm hover:bg-[#00C896]/25 transition-colors"
-            >
-              Add
-            </button>
           </motion.div>
         ) : (
           <motion.div
