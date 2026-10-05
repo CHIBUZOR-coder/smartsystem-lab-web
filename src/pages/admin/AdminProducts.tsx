@@ -9,6 +9,7 @@ import VideoUpload from '../../components/admin/VideoUpload'
 import YouTubeLinkField from '../../components/admin/YouTubeLinkField'
 import SkeletonBox from '../../components/ui/SkeletonBox'
 import MultiImageUpload from '../../components/garage/MultiImageUpload'
+import { toast, extractErrorMessage } from '../../store/toastStore'
 
 interface Product {
   id: string; slug: string; name: string; tagline: string; description: string
@@ -96,12 +97,22 @@ const AdminProducts = () => {
         ? api.put(`/api/admin/products/${editing.id}`, payload)
         : api.post('/api/admin/products', payload)
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-products'] }); setModal(false) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-products'] })
+      setModal(false)
+      toast.success(editing ? 'Product updated.' : 'Product created.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to save product.')),
   })
 
   const del = useMutation({
     mutationFn: (id: string) => api.delete(`/api/admin/products/${id}`),
-    onSuccess:  () => { qc.invalidateQueries({ queryKey: ['admin-products'] }); setDeleteId(null) },
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['admin-products'] })
+      setDeleteId(null)
+      toast.success('Product deleted.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to delete product.')),
   })
 
   const products = data?.data ?? []

@@ -5,6 +5,7 @@ import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import SkeletonBox from '../../components/ui/SkeletonBox'
+import { toast, extractErrorMessage } from '../../store/toastStore'
 
 interface FaqItem { id: string; question: string; answer: string; order: number }
 
@@ -59,12 +60,22 @@ const AdminFaq = () => {
     mutationFn: (d: FaqItem) => editing
       ? api.put(`/api/admin/faq/${editing.id}`, d)
       : api.post('/api/admin/faq', d),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-faq'] }); setModal(false) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-faq'] })
+      setModal(false)
+      toast.success(editing ? 'FAQ updated.' : 'FAQ added.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to save FAQ.')),
   })
 
   const del = useMutation({
     mutationFn: (id: string) => api.delete(`/api/admin/faq/${id}`),
-    onSuccess:  () => { qc.invalidateQueries({ queryKey: ['admin-faq'] }); setDeleteId(null) },
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['admin-faq'] })
+      setDeleteId(null)
+      toast.success('FAQ deleted.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to delete FAQ.')),
   })
 
   return (

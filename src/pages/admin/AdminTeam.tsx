@@ -8,6 +8,7 @@ import SkeletonBox from '../../components/ui/SkeletonBox'
 import { AdminTableSkeleton } from '../../components/ui/SkeletonBox'
 import { POSITIONS } from '../../lib/positions'
 import { useAuthStore } from '../../store/authStore'
+import { toast, extractErrorMessage } from '../../store/toastStore'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -182,12 +183,22 @@ const AdminTeam = () => {
       const { position: _position, ...rest } = d
       return editing ? api.put(`/api/admin/team/${editing.id}`, rest) : api.post('/api/admin/team', rest)
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-team'] }); setModal(false) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-team'] })
+      setModal(false)
+      toast.success(editing ? 'Team member updated.' : 'Team member added.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to save team member.')),
   })
 
   const del = useMutation({
     mutationFn: (id: string) => api.delete(`/api/admin/team/${id}`),
-    onSuccess:  () => { qc.invalidateQueries({ queryKey: ['admin-team'] }); setDeleteId(null) },
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['admin-team'] })
+      setDeleteId(null)
+      toast.success('Team member removed.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to remove team member.')),
   })
 
   const createInvite = useMutation({
@@ -198,12 +209,18 @@ const AdminTeam = () => {
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['admin-invites'] })
       setNewLink(res.data.link)
+      toast.success('Invite link created.')
     },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to create invite.')),
   })
 
   const revokeInvite = useMutation({
     mutationFn: (id: string) => api.delete(`/api/admin/invites/${id}`),
-    onSuccess:  () => qc.invalidateQueries({ queryKey: ['admin-invites'] }),
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['admin-invites'] })
+      toast.success('Invite revoked.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to revoke invite.')),
   })
 
   const openMakeAdmin = (m: TeamMember) => {
@@ -221,7 +238,9 @@ const AdminTeam = () => {
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['admin-team'] })
       setNewAdmin({ admin: res.data.data, password: res.data.temporaryPassword })
+      toast.success('Admin access granted.')
     },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to grant admin access.')),
   })
 
   const members = data?.data ?? []

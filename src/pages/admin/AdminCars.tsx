@@ -6,6 +6,7 @@ import Modal from '../../components/ui/Modal'
 import SkeletonBox from '../../components/ui/SkeletonBox'
 import CarForm, { type CarFormValues } from '../../components/garage/CarForm'
 import MultiImageUpload from '../../components/garage/MultiImageUpload'
+import { toast, extractErrorMessage } from '../../store/toastStore'
 
 type CarStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 
@@ -73,7 +74,9 @@ const GarageCardPanel = () => {
       qc.invalidateQueries({ queryKey: ['admin-garage-card'] })
       qc.invalidateQueries({ queryKey: ['garage-card'] })
       setDirty(false)
+      toast.success('Garage card images saved.')
     },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to save garage card images.')),
   })
 
   if (isLoading) return null
@@ -117,18 +120,32 @@ const AdminCars = () => {
       editing
         ? api.put(`/api/admin/cars/${editing.id}`, d)
         : api.post('/api/admin/cars', d),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-cars'] }); setModal(false) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-cars'] })
+      setModal(false)
+      toast.success(editing ? 'Car listing updated.' : 'Car listing created.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to save car listing.')),
   })
 
   const setStatus = useMutation({
     mutationFn: ({ id, status }: { id: string; status: CarStatus }) =>
       api.put(`/api/admin/cars/${id}`, { status }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-cars'] }),
+    onSuccess: (_data, { status }) => {
+      qc.invalidateQueries({ queryKey: ['admin-cars'] })
+      toast.success(`Car listing marked as ${status.toLowerCase()}.`)
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to update car status.')),
   })
 
   const del = useMutation({
     mutationFn: (id: string) => api.delete(`/api/admin/cars/${id}`),
-    onSuccess:  () => { qc.invalidateQueries({ queryKey: ['admin-cars'] }); setDeleteId(null) },
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['admin-cars'] })
+      setDeleteId(null)
+      toast.success('Car listing deleted.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to delete car listing.')),
   })
 
   const cars = data?.data ?? []

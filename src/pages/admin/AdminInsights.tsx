@@ -5,6 +5,7 @@ import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import SkeletonBox from '../../components/ui/SkeletonBox'
+import { toast, extractErrorMessage } from '../../store/toastStore'
 
 interface Insight {
   id: string; slug: string; title: string; excerpt: string; content: string
@@ -68,12 +69,22 @@ const AdminInsights = () => {
         ? api.put(`/api/admin/insights/${editing.id}`, payload)
         : api.post('/api/admin/insights', payload)
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-insights'] }); setModal(false) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-insights'] })
+      setModal(false)
+      toast.success(editing ? 'Insight updated.' : 'Insight published.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to save insight.')),
   })
 
   const del = useMutation({
     mutationFn: (id: string) => api.delete(`/api/admin/insights/${id}`),
-    onSuccess:  () => { qc.invalidateQueries({ queryKey: ['admin-insights'] }); setDeleteId(null) },
+    onSuccess:  () => {
+      qc.invalidateQueries({ queryKey: ['admin-insights'] })
+      setDeleteId(null)
+      toast.success('Insight deleted.')
+    },
+    onError: (err) => toast.error(extractErrorMessage(err, 'Failed to delete insight.')),
   })
 
   const insights = data?.data ?? []

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HelmetProvider } from 'react-helmet-async'
 import { initTheme } from './store/themeStore'
 import GlobalLoader from './components/ui/GlobalLoader'
+import ToastContainer from './components/ui/ToastContainer'
 import ErrorBoundary from './components/ErrorBoundary'
 import router from './router'
 import './index.css'
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <GlobalLoader />
+          <ToastContainer />
           <RouterProvider router={router} />
         </QueryClientProvider>
       </HelmetProvider>
