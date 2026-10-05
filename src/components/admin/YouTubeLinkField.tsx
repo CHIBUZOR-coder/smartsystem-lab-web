@@ -26,6 +26,7 @@ const YouTubeLinkField = ({ value, onChange, label = 'YouTube Video Link' }: You
       <label className="block text-sm font-medium text-[#E6F5F0]">{label}</label>
       <p className="text-xs text-[#638A85]">
         If set, this is shown on the product page instead of the uploaded video file above.
+        Click <span className="text-[#00C896] font-medium">Save</span> at the bottom of this form to apply.
       </p>
 
       <div className="flex gap-2">

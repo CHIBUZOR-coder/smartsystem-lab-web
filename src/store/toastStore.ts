@@ -15,7 +15,7 @@ interface ToastStore {
 }
 
 let nextId = 0
-const AUTO_DISMISS_MS = 4000
+export const TOAST_DURATION_MS = 4500
 
 export const useToastStore = create<ToastStore>((set) => ({
   toasts: [],
@@ -23,7 +23,7 @@ export const useToastStore = create<ToastStore>((set) => ({
   push(type, message) {
     const id = ++nextId
     set(s => ({ toasts: [...s.toasts, { id, type, message }] }))
-    setTimeout(() => set(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), AUTO_DISMISS_MS)
+    setTimeout(() => set(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), TOAST_DURATION_MS)
   },
 
   dismiss(id) {
