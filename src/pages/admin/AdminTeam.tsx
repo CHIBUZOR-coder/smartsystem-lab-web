@@ -354,10 +354,11 @@ const AdminTeam = () => {
                       <td className="px-5 py-3">
                         <button
                           onClick={() => revokeInvite.mutate(inv.id)}
+                          disabled={revokeInvite.isPending}
                           title="Invalidate this link so it can no longer be used"
-                          className="text-xs text-brand-danger hover:underline"
+                          className="text-xs text-brand-danger hover:underline disabled:opacity-50 disabled:pointer-events-none"
                         >
-                          Revoke
+                          {revokeInvite.isPending && revokeInvite.variables === inv.id ? 'Revoking…' : 'Revoke'}
                         </button>
                       </td>
                     </tr>

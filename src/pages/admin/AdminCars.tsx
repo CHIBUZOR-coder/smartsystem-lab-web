@@ -206,8 +206,20 @@ const AdminCars = () => {
                     <div className="flex flex-wrap gap-2">
                       {c.status === 'PENDING' && (
                         <>
-                          <button onClick={() => setStatus.mutate({ id: c.id, status: 'APPROVED' })} className="text-xs text-brand-green hover:underline">Approve</button>
-                          <button onClick={() => setStatus.mutate({ id: c.id, status: 'REJECTED' })} className="text-xs text-brand-danger hover:underline">Reject</button>
+                          <button
+                            onClick={() => setStatus.mutate({ id: c.id, status: 'APPROVED' })}
+                            disabled={setStatus.isPending}
+                            className="text-xs text-brand-green hover:underline disabled:opacity-50 disabled:pointer-events-none"
+                          >
+                            {setStatus.isPending && setStatus.variables?.id === c.id && setStatus.variables.status === 'APPROVED' ? 'Approving…' : 'Approve'}
+                          </button>
+                          <button
+                            onClick={() => setStatus.mutate({ id: c.id, status: 'REJECTED' })}
+                            disabled={setStatus.isPending}
+                            className="text-xs text-brand-danger hover:underline disabled:opacity-50 disabled:pointer-events-none"
+                          >
+                            {setStatus.isPending && setStatus.variables?.id === c.id && setStatus.variables.status === 'REJECTED' ? 'Rejecting…' : 'Reject'}
+                          </button>
                         </>
                       )}
                       <button onClick={() => openEdit(c)} className="text-xs text-brand-green hover:underline">Edit</button>
